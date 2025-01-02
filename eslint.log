@@ -1,0 +1,8 @@
+
+/home/runner/work/exp-multiplexing-vs-diversity-iiith/exp-multiplexing-vs-diversity-iiith/experiment/simulation/js/main.js
+   1:10  warning  'openPart' is defined but never used    no-unused-vars
+  21:10  warning  'getOutput' is defined but never used   no-unused-vars
+  41:10  warning  'getOutput2' is defined but never used  no-unused-vars
+
+✖ 3 problems (0 errors, 3 warnings)
+

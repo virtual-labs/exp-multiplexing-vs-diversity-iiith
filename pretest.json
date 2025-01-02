@@ -1,0 +1,39 @@
+{
+  "version": 2.0,
+  "questions": [
+    {
+      "question": "Which of the following sentences correctly describes the difference between multiplexing and diversity? ",
+      "answers": {
+        "a": "Diversity increases data rate by transmitting multiple data streams simultaneously.",
+        "b": "Multiplexing improves reliability by using multiple antennas to mitigate fading effects.",
+        "c": "Diversity enhances reliability through spatial, temporal, or frequency techniques.",
+        "d": "Multiplexing mitigates fading effects by utilizing independent fading paths between antennas."
+      },
+      "explanations": {
+        "a": "Explanation 1  <a href='www.google.com'>here</a>",
+        "b": "Explanation 2",
+        "c": "Explanation 2",
+        "d": "Explanation 2"
+      },
+      "correctAnswer": "a",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "What happens to the number of SISO channels when antennas are grouped for diversity?",
+      "answers": {
+        "a": "It increases",
+        "b": "It remains same",
+        "c": "It decreases",
+        "d": "It becomes zero"
+      },
+      "explanations": {
+        "a": "Explanation 1  <a href='www.google.com'>here</a>",
+        "b": "Explanation 2",
+        "c": "Explanation 2",
+        "d": "Explanation 2"
+      },
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    }
+  ]
+}
