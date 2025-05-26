@@ -20,8 +20,8 @@
         </div>
         <div class="column">
             <div class="tab">
-                <button class="tablinks" onclick="openPart(event, 'task1')", id="default">Fixed multiplexing</button>
-                <button class="tablinks" onclick="openPart(event, 'task2')">Fixed diversity</button>
+                <button class="tablinks" onclick="openPart(event, 'task1')", id="default">Diversity vs Multiplexing</button>
+             
             </div>
         </div>
     </div>
@@ -53,131 +53,93 @@
 						<div class="columns is-centered is-flex-direction-row is-flex-wrap-wrap is-align-content-start" style="margin-top:-1.5%">
 							<div class="column is-2-desktop is-4-tablet is-10-mobile">
 								<div class="box-question">
-									<div class="fill1">
-										Nt <input type="number" id="Nt">
-									</div>
-									<div class="fill1">
-										Nr <input type="number" id="Nr" step="0.1">
-									</div>
-									<div class="fill1">
-										SNR <input type="number" id="SNR" step="0.1">
-									</div>
-									<div class="fill1">
-										R <input type="number" id="R" step="0.1">
-									</div>
-									<button class="buttonTotal" id="calculateButton" role="button" onClick="getOutput()">Calculate</button>
-									
+									<h2>System Parameters</h2>
+									<form id="parametersForm">
+											<div class="form-row">
+													<div class="form-group">
+															<label for="txAntennas">Tx Antennas (Nt)</label>
+															<input type="number" id="txAntennas" min="1" max="8" value="2">
+													</div>
+													<div class="form-group">
+															<label for="rxAntennas">Rx Antennas (Nr)</label>
+															<input type="number" id="rxAntennas" min="1" max="8" value="2">
+													</div>
+											</div>
+											
+											<div class="form-group">
+													<label for="snr">SNR (dB)</label>
+													<input type="number" id="snr" min="0" max="30" value="10">
+											</div>
+											
+											<div class="form-group">
+													<label for="mode">Optimization Mode</label>
+													<select id="mode">
+															<option value="multiplexing">Fixed Multiplexing (R)</option>
+															<option value="diversity">Fixed Diversity (Pe)</option>
+													</select>
+											</div>
+											
+											<div class="form-group">
+													<label id="fixedValueLabel" for="fixedValue">Fixed Rate (R)</label>
+													<input type="number" id="fixedValue" step="0.1" min="0.1" max="8" value="2">
+											</div>
+											
+											<button type="submit">Update</button>
+									</form>
 								</div>
 							</div>
 						</div>
 					</div>
 						<div class="center-column box">
 						<div class="column is-7-desktop is-10-tablet is-10-mobile" >
-							<img id="imageDisplay" src="./images/DivVsMux.png" alt="Image">
-						</div>
+					
+							<div class="system-diagram">
+									<div class="antenna-column">
+											<h3>Transmitter</h3>
+											<div id="txColumn"></div>
+									</div>
+									
+									<canvas id="signalCanvas"></canvas>
+									
+									<div class="antenna-column">
+											<h3>Receiver</h3>
+											<div id="rxColumn"></div>
+									</div>
+							</div>
+							
+							<div class="info-box">
+									<h3>Explanation:</h3>
+									<p id="explanation1">
+											The diversity-multiplexing tradeoff (DMT) shows the fundamental relationship between reliability (diversity gain) 
+											and data rate (multiplexing gain) in MIMO wireless systems. For a 2×2 MIMO system, the 
+											maximum diversity gain is 4 and the maximum multiplexing gain is 2.
+									</p>
+									<p id="explanation2">
+											With fixed multiplexing gain r = 2, the achievable diversity gain is approximately 0.0.
+									</p>
+							</div>						</div>
 					</div>
 						<div class="right-column box">
-						<div class="column is-3-desktop is-10-tablet is-5-mobile">
-							<div class="box-question">
-								<div class="v-datalist-title">Observations</div>
-								<div id="observations">
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-
-
-			</div>
-
-		</section>
-	</div>
-
-
-
-
-	<div id="task2" class="tabcontent">
-		<section class="fre" id="TASK2">
-			<div class="max-width">
-				<h2 class="title">Diversity vs Multiplexing</h2>
-				<div class="columns is-centered">
-					<div class="v-collapsible-instruction-container v-instruction-container" style="margin-top: 2%;">
-						<div class="v-collapsible is-size-5">Instructions</div>
-						<div class="v-content" style="text-align: left; padding-left: 10%; padding-right: 10%;">
-							<h3> <b> To understand the different combining techniques in MISO, follow these steps: </b> </h3>
-							<br>
-							<h3>
-								<ol> 
-									<li> test</li> 
-								</ol>
-							</h3>
-							<br>
-						</div>
-					</div>
-				</div>
-			
-					<div class="columns-container">
-						<div class="left-column box">
-							<div class="columns is-centered is-flex-direction-row is-flex-wrap-wrap is-align-content-start"
-							style="margin-top:-1.5%">
-								<div class="column is-2-desktop is-4-tablet is-10-mobile">
-									<div class="box-question">
-										<div class="fill1">
-											Nt <input type="number" id="Nt2">
-										</div>
-										<div class="fill1">
-											Nr <input type="number" id="Nr2" step="0.1">
-										</div>
-										<div class="fill1">
-											SNR <input type="number" id="SNR2" step="0.1">
-										</div>
-										<div class="fill1">
-											Pe <input type="number" id="Pe" step="0.1">
-										</div>
-										<button class="buttonTotal" id="calculateButton2" role="button" onClick="getOutput2()">Calculate</button>
-										
-										
-									</div>
-								</div>
-							</div>	
-						</div>
-
-						<div class="center-column box">
-							<div class="column is-7-desktop is-10-tablet is-10-mobile" >
-								<img id="imageDisplay2" src="./images/DivVsMux.png" alt="Image">
-							</div>
-						</div>
-
-						<div class="right-column box">
-							<div class="column is-3-desktop is-10-tablet is-5-mobile">
-								<div class="box-question">
-									<div class="v-datalist-title">Observations</div>
-									<div id="observations2">
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-
-
-
-
-
-
-		
-					<script src="js/jsplumb.bundle.js"></script>
-					<script src="https://cdn.jsdelivr.net/gh/virtual-labs/virtual-style@0.0.8-b/js/script.js"></script>
-					<script type="module" src="js/main.js"></script>
+    <h2>Observations</h2>
+    <div class="v-datalist-title">Tradeoff Analysis</div>
+    <div style="width: 100%; height: 280px;">
+        <canvas id="tradeoffChart"></canvas>
+    </div>
+    
+    <div class="info-box">
+        <h3>Key Points:</h3>
+        <ul class="info-list">
+            <li>Maximum diversity gain: <span id="maxDiversity">N/A</span></li>
+            <li>Maximum multiplexing gain: <span id="maxMultiplexing">N/A</span></li>
+            <li>Operating point: r = <span id="operatingR">?</span>, d = <span id="operatingD">?</span></li>
+        </ul>
+    </div>
+</div>
 
 				</div>
 			</div>
-
 		</section>
 	</div>
-
-
-
-
 
 	<script src="./js/main.js"></script>
 	<script src="https://cdn.jsdelivr.net/gh/virtual-labs/virtual-style@0.0.8-b/js/script.js"></script>
