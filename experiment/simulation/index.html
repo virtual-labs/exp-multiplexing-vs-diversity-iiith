@@ -36,15 +36,20 @@
 					<div class="v-collapsible-instruction-container v-instruction-container" style="margin-top: 2%;">
 						<div class="v-collapsible is-size-5">Instructions</div>
 						<div class="v-content" style="text-align: left; padding-left: 10%; padding-right: 10%;">
-							<h3> <b> To understand the tradeoff between multiplexing and diversity, follow these steps: </b> </h3>
+							<h3> <b> To understand the diversity-multiplexing tradeoff in MIMO systems, follow these steps: </b> </h3>
 							<br>
 							<h3>
-								<ol> 
-									<li> Enter the input values. Note that entering R implies fixed value for muliplexing. </li>
-									<li> Observe that the rate is in coherence with the input and the remaining antennas are used for diversity.</li>
-									
+								<ol>
+									<li>Begin by observing the default 2×2 MIMO configuration and note the maximum values for diversity gain (reliability) and multiplexing gain (data rate).</li>
+									<li>Experiment with different numbers of transmit (Tx) and receive (Rx) antennas to see how they affect the maximum achievable diversity and multiplexing gains.</li>
+									<li>When in "Fixed Multiplexing (R)" mode, adjust the R value to see how prioritizing data rate reduces the available diversity gain.</li>
+									<li>Switch to "Fixed Diversity (Pe)" mode to see how prioritizing reliability affects the achievable multiplexing gain.</li>
+									<li>Observe how the operating point (red dot) moves along the tradeoff curve as you adjust parameters.</li>
+									<li>Note that the maximum multiplexing gain equals min(Nt, Nr) while the maximum diversity gain equals Nt × Nr.</li>
+									<li>The SNR parameter affects the absolute performance but not the fundamental tradeoff relationship.</li>
 								</ol>
 							</h3>
+							<p style="font-style: italic; margin-top: 15px;">This experiment demonstrates the fundamental diversity-multiplexing tradeoff described by Zheng and Tse, showing that increasing one gain necessarily comes at the expense of the other.</p>
 							<br>
 						</div>
 					</div>
@@ -107,16 +112,19 @@
 									</div>
 							</div>
 							<div class="info-box">
-									<h3>Explanation:</h3>
+								<h3 class="info-title">Explanation:</h3>
+								<div class="info-content">
 									<p id="explanation1">
-											The diversity-multiplexing tradeoff (DMT) shows the fundamental relationship between reliability (diversity gain) 
-											and data rate (multiplexing gain) in MIMO wireless systems. For a 2×2 MIMO system, the 
-											maximum diversity gain is 4 and the maximum multiplexing gain is 2.
+										The diversity-multiplexing tradeoff (DMT) shows the fundamental relationship between reliability (diversity gain) 
+										and data rate (multiplexing gain) in MIMO wireless systems. For a 2×2 MIMO system, the 
+										maximum diversity gain is 4 and the maximum multiplexing gain is 2.
 									</p>
 									<p id="explanation2">
-											With fixed multiplexing gain r = 2, the achievable diversity gain is approximately 0.0.
+										With fixed multiplexing gain r = 2, the achievable diversity gain is approximately 0.0.
 									</p>
-							</div>						</div>
+								</div>
+							</div>
+					</div>
 					</div>
 	<div class="right-column box">
 
