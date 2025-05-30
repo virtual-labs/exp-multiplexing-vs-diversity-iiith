@@ -62,14 +62,29 @@
 									<h2>System Parameters</h2>
 									<form id="parametersForm">
                     <div class="form-row">
-                        <div class="form-group">
-                            <label for="txAntennas">Tx Antennas (Nt)</label>
-                            <input type="number" id="txAntennas" min="1" max="8" value="2">
-                        </div>
-                        <div class="form-group">
-                            <label for="rxAntennas">Rx Antennas (Nr)</label>
-                            <input type="number" id="rxAntennas" min="1" max="8" value="2">
-                        </div>
+												<div class="form-group">
+													<label for="txAntennas">Tx Antennas (Nt)</label>
+													<input type="number" id="txAntennas" min="1" max="8" value="2" onchange="validateAntennaInput(this, 'txAntennaError')">
+													<small id="txAntennaError" class="error-message alert alert-danger" style="display: none; padding: 2px 8px; margin-top: 5px; border-radius: 4px;">Please enter a value between 1 and 8</small>
+												</div>
+												<div class="form-group">
+													<label for="rxAntennas">Rx Antennas (Nr)</label>
+													<input type="number" id="rxAntennas" min="1" max="8" value="2" onchange="validateAntennaInput(this, 'rxAntennaError')">
+													<small id="rxAntennaError" class="error-message alert alert-danger" style="display: none; padding: 2px 8px; margin-top: 5px; border-radius: 4px;">Please enter a value between 1 and 8</small>
+												</div>
+												<script>
+													function validateAntennaInput(input, errorId) {
+														const value = parseInt(input.value);
+														const errorElement = document.getElementById(errorId);
+														
+														if (value < 1 || value > 8 || isNaN(value)) {
+															errorElement.style.display = 'block';
+															input.value = Math.max(1, Math.min(8, isNaN(value) ? 1 : value));
+														} else {
+															errorElement.style.display = 'none';
+														}
+													}
+												</script>
                     </div>
                     <div class="form-group">
                         <label for="snr">SNR (dB)</label>
@@ -94,7 +109,7 @@
 					</div>
 						<div class="center-column box">
 						<div class="column is-7-desktop is-10-tablet is-10-mobile" >
-							<div  id="systemDiagramCard">
+							<div id="systemDiagramCard">
 							<div class="system-diagram">
 									<div class="antenna-column">
 											<h3>Transmitter</h3>
