@@ -10,27 +10,27 @@
         "d": "Trade-off between transmission power and receiver sensitivity"
       },
       "explanations": {
-        "a": "Explanation 1  <a href='www.google.com'>here</a>",
-        "b": "Explanation 2",
-        "c": "Explanation 2",
-        "d": "Explanation 2"
+        "a": "Please try again.. diversity increases reliability and multiplexing increases the number of parallel data streams available",
+        "b": "Correct!",
+        "c": "Please try again.. diversity increases reliability and multiplexing increases the number of parallel data streams available",
+        "d": "Please try again.. diversity increases reliability and multiplexing increases the number of parallel data streams available"
       },
-      "correctAnswer": "a",
+      "correctAnswer": "b",
       "difficulty": "beginner"
     },
     {
-      "question": "If the maximum achievable diversity gain is 28. However, the diversity gain achieved is 10 and the multiplexing gain is 2. Find the number of transmit and recieve antennas.",
+      "question": "If the maximum achievable diversity gain is 12. However, the diversity gain achieved is 6 and the multiplexing gain is 1. Find the number of transmit and recieve antennas.",
       "answers": {
         "a": "7,4",
-        "b": "6,5",
-        "c": "2,14",
+        "b": "6,2",
+        "c": "4,3",
         "d": "8,3"
       },
       "explanations": {
-        "a": "Explanation 1  <a href='www.google.com'>here</a>",
-        "b": "Explanation 2",
-        "c": "Explanation 2",
-        "d": "Explanation 2"
+        "a": "Please try again using the trade-off equation",
+        "b": "Please try again using the trade-off equation",
+        "c": "Correct!",
+        "d": "Please try again using the trade-off equation"
       },
       "correctAnswer": "c",
       "difficulty": "beginner"

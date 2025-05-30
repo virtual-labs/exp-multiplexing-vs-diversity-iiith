@@ -10,12 +10,12 @@
         "d": "Multiplexing mitigates fading effects by utilizing independent fading paths between antennas."
       },
       "explanations": {
-        "a": "Explanation 1  <a href='www.google.com'>here</a>",
-        "b": "Explanation 2",
-        "c": "Explanation 2",
-        "d": "Explanation 2"
+        "a": "Please try again.. Multiplexing increases the data rate by sending parallel streams of data",
+        "b": "Please try again.. Diversity improves reliability by using multiple antennas to mitigate fading effects.",
+        "c": "Correct!",
+        "d": "Please try again.. Multiplexing increases the data rate by sending parallel streams of data"
       },
-      "correctAnswer": "a",
+      "correctAnswer": "c",
       "difficulty": "beginner"
     },
     {
@@ -27,10 +27,10 @@
         "d": "It becomes zero"
       },
       "explanations": {
-        "a": "Explanation 1  <a href='www.google.com'>here</a>",
-        "b": "Explanation 2",
-        "c": "Explanation 2",
-        "d": "Explanation 2"
+        "a": "Please try again.. note that number of SISO channels depends on the number of individual available antennas",
+        "b": "Please try again.. note that number of SISO channels depends on the number of individual available antennas",
+        "c": "Correct!",
+        "d": "Please try again.. note that number of SISO channels depends on the number of individual available antennas"
       },
       "correctAnswer": "c",
       "difficulty": "beginner"
