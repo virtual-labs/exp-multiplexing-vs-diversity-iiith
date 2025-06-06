@@ -431,7 +431,7 @@ th{
   border-radius: 10px;
   padding: 20px;
   min-width: 250px; /* Minimum width */
-  max-width: 300px; /* Maximum width */
+  max-width: 330px; /* Maximum width */
   align-self: flex-start; /* Align to top */
 }
 
@@ -455,7 +455,7 @@ th{
   border-radius: 10px;
   padding: 20px;
   min-width: 250px; /* Minimum width */
-  max-width: 300px; /* Maximum width */
+  max-width: 30px; /* Maximum width */
   align-self: flex-start; /* Align to top */
 }
 
@@ -527,7 +527,7 @@ button:active {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 0 auto; /* Center in container */
+  margin-top:30px; /* Center in container */
 }
 
 .antenna-column {
