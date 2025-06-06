@@ -56,72 +56,71 @@
 				</div>
 
 
+				<!-- Improved container structure for better responsiveness -->
 				<div class="columns-container">
 					<div class="left-column box">
-						<div class="columns is-centered is-flex-direction-row is-flex-wrap-wrap is-align-content-start" style="margin-top:-1.5%">
-									<h2>System Parameters</h2>
-									<form id="parametersForm">
-                    <div class="form-row">
-												<div class="form-group">
-													<label for="txAntennas">Tx Antennas (Nt)</label>
-													<input type="number" id="txAntennas" min="1" max="8" value="2" onchange="validateAntennaInput(this, 'txAntennaError')">
-													<small id="txAntennaError" class="error-message alert alert-danger" style="display: none; padding: 2px 8px; margin-top: 5px; border-radius: 4px;">Please enter a value between 1 and 8</small>
-												</div>
-												<div class="form-group">
-													<label for="rxAntennas">Rx Antennas (Nr)</label>
-													<input type="number" id="rxAntennas" min="1" max="8" value="2" onchange="validateAntennaInput(this, 'rxAntennaError')">
-													<small id="rxAntennaError" class="error-message alert alert-danger" style="display: none; padding: 2px 8px; margin-top: 5px; border-radius: 4px;">Please enter a value between 1 and 8</small>
-												</div>
-												<script>
-													function validateAntennaInput(input, errorId) {
-														const value = parseInt(input.value);
-														const errorElement = document.getElementById(errorId);
-														
-														if (value < 1 || value > 8 || isNaN(value)) {
-															errorElement.style.display = 'block';
-															input.value = Math.max(1, Math.min(8, isNaN(value) ? 1 : value));
-														} else {
-															errorElement.style.display = 'none';
-														}
-													}
-												</script>
-                    </div>
-                    <div class="form-group">
-                        <label for="snr">SNR (dB)</label>
-                        <input type="number" id="snr" min="0" max="30" value="10">
-                    </div>
-                    <div class="form-group">
-                        <label for="mode">Optimization Mode</label>
-                        <select id="mode">
-                            <option value="multiplexing">Fixed Multiplexing (R)</option>
-                            <option value="diversity">Fixed Diversity Gain (d)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label id="fixedValueLabel" for="fixedValue">Fixed Rate (R)</label>
-                        <input type="number" id="fixedValue" step="0.1" min="0.1" max="8" value="2">
-                    </div>
-                    <button type="button" id="generateButton">Generate</button> 
-                    <button type="button" id="optimizeButton" style="margin-top:10px;">Optimize Connections</button>
-                </form>
+						<h2>System Parameters</h2>
+						<form id="parametersForm">
+							<div class="form-row">
+								<div class="form-group">
+									<label for="txAntennas">Tx Antennas (Nt)</label>
+									<input type="number" id="txAntennas" min="1" max="8" value="2" onchange="validateAntennaInput(this, 'txAntennaError')">
+									<small id="txAntennaError" class="error-message alert alert-danger" style="display: none; padding: 2px 8px; margin-top: 5px; border-radius: 4px;">Please enter a value between 1 and 8</small>
 								</div>
-			
+								<div class="form-group">
+									<label for="rxAntennas">Rx Antennas (Nr)</label>
+									<input type="number" id="rxAntennas" min="1" max="8" value="2" onchange="validateAntennaInput(this, 'rxAntennaError')">
+									<small id="rxAntennaError" class="error-message alert alert-danger" style="display: none; padding: 2px 8px; margin-top: 5px; border-radius: 4px;">Please enter a value between 1 and 8</small>
+								</div>
+								<script>
+									function validateAntennaInput(input, errorId) {
+										const value = parseInt(input.value);
+										const errorElement = document.getElementById(errorId);
+										
+										if (value < 1 || value > 8 || isNaN(value)) {
+											errorElement.style.display = 'block';
+											input.value = Math.max(1, Math.min(8, isNaN(value) ? 1 : value));
+										} else {
+											errorElement.style.display = 'none';
+										}
+									}
+								</script>
+							</div>
+							<div class="form-group">
+								<label for="snr">SNR (dB)</label>
+								<input type="number" id="snr" min="0" max="30" value="10">
+							</div>
+							<div class="form-group">
+								<label for="mode">Optimization Mode</label>
+								<select id="mode">
+									<option value="multiplexing">Fixed Multiplexing (R)</option>
+									<option value="diversity">Fixed Diversity Gain (d)</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label id="fixedValueLabel" for="fixedValue">Fixed Rate (R)</label>
+								<input type="number" id="fixedValue" step="0.1" min="0.1" max="8" value="2">
+							</div>
+							<button type="button" id="generateButton">Generate</button> 
+							<button type="button" id="optimizeButton" style="margin-top:10px;">Optimize Connections</button>
+						</form>
 					</div>
-						<div class="center-column box">
-						<div class="column is-7-desktop is-10-tablet is-10-mobile" >
-							<div id="systemDiagramCard">
+					
+					<div class="center-column box">
+						<div id="systemDiagramCard">
+							<h2>System Diagram</h2>
 							<div class="system-diagram">
-									<div class="antenna-column">
-											<h3>Transmitter</h3>
-											<div id="txColumn"></div>
-									</div>
-									
-									<canvas id="signalCanvas"></canvas>
-									
-									<div class="antenna-column">
-											<h3>Receiver</h3>
-											<div id="rxColumn"></div>
-									</div>
+								<div class="antenna-column">
+									<h3>Transmitter</h3>
+									<div id="txColumn"></div>
+								</div>
+								
+								<canvas id="signalCanvas"></canvas>
+								
+								<div class="antenna-column">
+									<h3>Receiver</h3>
+									<div id="rxColumn"></div>
+								</div>
 							</div>
 							<div class="info-box">
 								<h3 class="info-title">Explanation:</h3>
@@ -138,24 +137,25 @@
 							</div>
 						</div>
 					</div>
+					
+					<div class="right-column box">
+						<div id="tradeoffCurveCard">
+							<h2>Tradeoff Curve</h2>
+							<div style="width: 100%; height: auto;">
+								<canvas id="tradeoffChart"></canvas>
+							</div>
+							<div class="info-box">
+								<h3>Key Points:</h3>
+								<ul class="info-list">
+									<li>Maximum diversity gain: <span id="maxDiversity">N/A</span></li>
+									<li>Maximum multiplexing gain: <span id="maxMultiplexing">N/A</span></li>
+									<li>Operating point: r = <span id="operatingR">?</span>, d = <span id="operatingD">?</span></li>
+								</ul>
+							</div>
+						</div>
 					</div>
-	<div class="right-column box">
-
-		<div  id="tradeoffCurveCard" >
-			<h2>Tradeoff Curve</h2>
-			<canvas id="tradeoffChart"></canvas>
-			<div class="info-box">
-					<h3>Key Points:</h3>
-					<ul class="info-list">
-							<li>Maximum diversity gain: <span id="maxDiversity">N/A</span></li>
-							<li>Maximum multiplexing gain: <span id="maxMultiplexing">N/A</span></li>
-							<li>Operating point: r = <span id="operatingR">?</span>, d = <span id="operatingD">?</span></li>
-					</ul>
-			</div>
-	</div>
-</div>
-
 				</div>
+
 			</div>
 		</section>
 	</div>

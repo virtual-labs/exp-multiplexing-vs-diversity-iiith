@@ -419,6 +419,8 @@ th{
   display: flex;
   justify-content: space-between;
   margin-top: 20px; /* Adjust as needed */
+  flex-wrap: wrap;
+  gap: 15px; /* Use gap for consistent spacing */
 }
 
 .left-column {
@@ -428,6 +430,9 @@ th{
   border: 2px solid #98CB3B; /* Light green border */
   border-radius: 10px;
   padding: 20px;
+  min-width: 250px; /* Minimum width */
+  max-width: 300px; /* Maximum width */
+  align-self: flex-start; /* Align to top */
 }
 
 .center-column {
@@ -436,6 +441,10 @@ th{
   border: 2px solid #000000; /* Black border */
   border-radius: 10px;
   padding: 20px;
+  min-width: 320px; /* Ensure minimum width */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .right-column {
@@ -445,7 +454,9 @@ th{
   border: 2px solid #98CB3B; /* Light green border */
   border-radius: 10px;
   padding: 20px;
-  min-width: 300px; /* Ensure minimum width */
+  min-width: 250px; /* Minimum width */
+  max-width: 300px; /* Maximum width */
+  align-self: flex-start; /* Align to top */
 }
 
 .container {
@@ -511,10 +522,12 @@ button:active {
 .system-diagram {
   position: relative;
   height: 400px;
-  width: 800px;
+  width: 100%; /* Full width of parent */
+  max-width: 800px; /* Maximum width */
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin: 0 auto; /* Center in container */
 }
 
 .antenna-column {
@@ -561,18 +574,13 @@ button:active {
   background-color: #fff;
 }
 
-#tradeoffChart {
-  width: 400px;
-  height: 300px;
-  border: 1px solid #ddd;
-  margin-bottom: 15px;
-}
-
 .info-box {
   border-radius: 6px;
   padding: 15px;
-  width: 800px;
-  margin-top: 15px;
+  width: 100%; /* Full width */
+  max-width: 800px; /* Maximum width */
+  margin: 15px auto 0; /* Center in container */
+  background-color: #f0f4f8;
 }
 
 .info-list {
@@ -595,5 +603,75 @@ button:active {
   .left-column, .center-column, .right-column {
     margin: 10px 0;
     width: 100%;
+  }
+}
+
+/* Enhanced media queries for better responsiveness */
+/* Large laptops and desktops */
+@media (min-width: 1200px) {
+  /* ...existing code... */
+}
+
+/* Medium laptops */
+@media (min-width: 992px) and (max-width: 1199px) {
+  .system-diagram {
+    height: 350px;
+  }
+  
+  .info-box {
+    padding: 12px;
+  }
+  
+  .antenna {
+    width: 45px;
+    height: 45px;
+  }
+}
+
+/* Small laptops */
+@media (min-width: 768px) and (max-width: 991px) {
+  .columns-container {
+    flex-direction: column;
+  }
+  
+  .left-column, .center-column, .right-column {
+    max-width: 100%;
+    width: 100%;
+    margin: 10px 0;
+  }
+  
+  .system-diagram {
+    height: 300px;
+  }
+  
+  .antenna {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* Tablets and smaller screens */
+@media (max-width: 767px) {
+  .columns-container {
+    flex-direction: column;
+  }
+  
+  .left-column, .center-column, .right-column {
+    max-width: 100%;
+    width: 100%;
+    margin: 10px 0;
+  }
+  
+  .system-diagram {
+    height: 250px;
+  }
+  
+  .antenna {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .info-box {
+    padding: 10px;
   }
 }

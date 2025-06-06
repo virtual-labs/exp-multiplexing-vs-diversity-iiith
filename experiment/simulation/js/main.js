@@ -92,35 +92,80 @@ window.onload = startup;
             updateSystem();
         });
 
+        // Enhanced window resize handler for better responsiveness
         window.addEventListener('resize', function() {
-            if (tradeoffCurveCard.style.display !== 'none') {
-                tradeoffChartEl.width = tradeoffChartEl.offsetWidth;
-                tradeoffChartEl.height = 350; 
-                renderTradeoffChart();
-            }
-            
-            if (systemDiagramCard.style.display !== 'none' && txElements.length > 0 && rxElements.length > 0) {
-                signalCanvas.width = signalCanvas.parentElement.offsetWidth;
-                signalCanvas.height = signalCanvas.parentElement.offsetHeight;
-                const ctx = signalCanvas.getContext('2d');
-                ctx.clearRect(0, 0, signalCanvas.width, signalCanvas.height);
+            // Improved resize handling
+            function resizeWithDelay() {
+                // Update tradeoff chart if visible
+                if (tradeoffCurveCard.style.display !== 'none') {
+                    tradeoffChartEl.width = tradeoffChartEl.parentElement.clientWidth;
+                    tradeoffChartEl.height = Math.min(350, Math.max(250, window.innerHeight * 0.3));
+                    renderTradeoffChart();
+                }
                 
-                console.log("Window resize drawing. isOptimizedDiagramView:", isOptimizedDiagramView); // DEBUG
-                if (isOptimizedDiagramView) {
-                    drawOptimizedConnections(txElements, rxElements, ctx, lastCalculatedMultiplexingGain_r);
-                } else {
-                    drawChannelConnections(txElements, rxElements, ctx);
+                // Update system diagram if visible
+                if (systemDiagramCard.style.display !== 'none' && txElements.length > 0 && rxElements.length > 0) {
+                    const parentWidth = signalCanvas.parentElement.clientWidth;
+                    const parentHeight = signalCanvas.parentElement.clientHeight;
+                    
+                    signalCanvas.width = parentWidth;
+                    signalCanvas.height = parentHeight;
+                    
+                    const ctx = signalCanvas.getContext('2d');
+                    ctx.clearRect(0, 0, signalCanvas.width, signalCanvas.height);
+                    
+                    console.log("Window resize drawing. isOptimizedDiagramView:", isOptimizedDiagramView);
+                    
+                    // Add small delay to ensure DOM is updated
+                    setTimeout(() => {
+                        if (isOptimizedDiagramView) {
+                            drawOptimizedConnections(txElements, rxElements, ctx, lastCalculatedMultiplexingGain_r);
+                        } else {
+                            drawChannelConnections(txElements, rxElements, ctx);
+                        }
+                    }, 50);
                 }
             }
+            
+            // Use a debounce approach to avoid excessive redraws
+            clearTimeout(window.resizeTimer);
+            window.resizeTimer = setTimeout(resizeWithDelay, 100);
         });
 
         function init() {
             updateFixedValueLabel(); 
-            isOptimizedDiagramView = false; 
+            isOptimizedDiagramView = false;
+            
+            // Set initial sizes based on viewport
+            const resizeForViewport = () => {
+                const viewportWidth = window.innerWidth;
+                const systemDiagram = document.querySelector('.system-diagram');
+                
+                // Adjust system diagram height based on viewport width
+                if (systemDiagram) {
+                    if (viewportWidth < 768) {
+                        systemDiagram.style.height = '250px';
+                    } else if (viewportWidth < 992) {
+                        systemDiagram.style.height = '300px';
+                    } else if (viewportWidth < 1200) {
+                        systemDiagram.style.height = '350px';
+                    } else {
+                        systemDiagram.style.height = '400px';
+                    }
+                }
+            };
+            
+            // Call resize function initially
+            resizeForViewport();
+            
+            // Setup the rest of the UI
             updateSystem(); 
-            systemDiagramCard.style.display = 'block'; 
-            tradeoffCurveCard.style.display = 'block'; 
+            systemDiagramCard.style.display = 'block';
+            tradeoffCurveCard.style.display = 'block';
             optimizeButton.style.display = 'inline-block';
+            
+            // Add additional resize listener for responsiveness
+            window.addEventListener('resize', resizeForViewport);
         }
 
         function optimizeSystemConnections() {
