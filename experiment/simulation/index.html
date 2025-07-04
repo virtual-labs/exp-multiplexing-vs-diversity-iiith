@@ -3,7 +3,7 @@
 
 <head>
 	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	<link rel="stylesheet" href="css/main.css">
 	<title>Spatial Diversity Simulation</title>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -32,6 +32,9 @@
 		<section class="fre" id="TASK1">
 			<div class="max-width">
 				<h2 class="title">Diversity vs Multiplexing</h2>
+				<div class="responsive-notice d-md-none mb-3 alert alert-info">
+					<small>please scroll down to see results and simulation</small>
+				</div>
 				<div class="columns is-centered">
 					<div class="v-collapsible-instruction-container v-instruction-container" style="margin-top: 2%;">
 						<div class="v-collapsible is-size-5">Instructions</div>
@@ -64,12 +67,12 @@
 							<div class="form-row">
 								<div class="form-group">
 									<label for="txAntennas">Tx Antennas (Nt)</label>
-									<input type="number" id="txAntennas" min="1" max="8" value="2" onchange="validateAntennaInput(this, 'txAntennaError')">
+									<input type="number" id="txAntennas" min="1" max="8" value="2" onchange="validateAntennaInput(this, 'txAntennaError')" inputmode="numeric">
 									<small id="txAntennaError" class="error-message alert alert-danger" style="display: none; padding: 2px 8px; margin-top: 5px; border-radius: 4px;">Please enter a value between 1 and 8</small>
 								</div>
 								<div class="form-group">
 									<label for="rxAntennas">Rx Antennas (Nr)</label>
-									<input type="number" id="rxAntennas" min="1" max="8" value="2" onchange="validateAntennaInput(this, 'rxAntennaError')">
+									<input type="number" id="rxAntennas" min="1" max="8" value="2" onchange="validateAntennaInput(this, 'rxAntennaError')" inputmode="numeric">
 									<small id="rxAntennaError" class="error-message alert alert-danger" style="display: none; padding: 2px 8px; margin-top: 5px; border-radius: 4px;">Please enter a value between 1 and 8</small>
 								</div>
 								<script>
@@ -88,7 +91,7 @@
 							</div>
 							<div class="form-group">
 								<label for="snr">SNR (dB)</label>
-								<input type="number" id="snr" min="0" max="30" value="10">
+								<input type="number" id="snr" min="0" max="30" value="10" inputmode="numeric">
 							</div>
 							<div class="form-group">
 								<label for="mode">Optimization Mode</label>
@@ -99,10 +102,12 @@
 							</div>
 							<div class="form-group">
 								<label id="fixedValueLabel" for="fixedValue">Fixed Rate (R)</label>
-								<input type="number" id="fixedValue" step="0.1" min="0.1" max="8" value="2">
+								<input type="number" id="fixedValue" step="0.1" min="0.1" max="8" value="2" inputmode="decimal">
 							</div>
-							<button type="button" id="generateButton">Generate</button> 
-							<button type="button" id="optimizeButton" class="btn btn-secondary mt-2" style="background-color:#98CB3B;">Optimize Connections</button>
+							<div class="form-buttons">
+								<button type="button" id="generateButton">Generate</button> 
+								<button type="button" id="optimizeButton" class="btn btn-secondary mt-2" style="background-color:#98CB3B;">Optimize Connections</button>
+							</div>
 						</form>
 					</div>
 					

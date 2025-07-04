@@ -25,6 +25,11 @@ html{
     background: #555;
 }
 
+/* Enhanced Mobile Responsiveness - Global Styles */
+body {
+  overflow-x: hidden; /* Prevent horizontal scrolling on mobile */
+}
+
 /* ---------------------------------- Laptops and Desktops ------------------------- */
 
 @media (min-width: 1200px){
@@ -673,5 +678,389 @@ button:active {
   
   .info-box {
     padding: 10px;
+  }
+}
+
+/* Enhanced Mobile Responsiveness for Tablets and Medium Screens */
+@media (max-width: 992px) {
+  .columns-container {
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .left-column, .right-column, .center-column {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+  }
+  
+  .system-diagram {
+    height: 350px;
+    margin: 20px auto;
+  }
+  
+  button {
+    width: 100%;
+    padding: 12px 5px;
+    margin-top: 10px;
+  }
+  
+  .tab button {
+    padding: 10px 8px;
+    font-size: 16px;
+  }
+}
+
+/* Enhanced Mobile Responsiveness for Small Tablets */
+@media (max-width: 768px) {
+  .system-diagram {
+    height: 300px;
+    flex-direction: row;
+    margin: 15px auto;
+  }
+  
+  .antenna {
+    width: 35px;
+    height: 35px;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  
+  .info-box {
+    padding: 12px;
+  }
+  
+  section .title {
+    font-size: 32px;
+    margin-top: 8%;
+  }
+  
+  .tab button {
+    font-size: 14px;
+    padding: 8px 5px;
+  }
+  
+  input, select {
+    font-size: 16px; /* Keep 16px to avoid zoom on iOS */
+    padding: 10px;
+  }
+  
+  label {
+    font-size: 15px;
+  }
+}
+
+/* Enhanced Mobile Responsiveness for Phones */
+@media (max-width: 576px) {
+  .system-diagram {
+  
+    height: auto;
+    min-height: 400px;
+    padding: 20px 0;
+  }
+  
+  .antenna-column {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  
+
+  .info-box {
+    padding: 10px;
+  }
+  
+  section .title {
+    font-size: 28px;
+    margin-top: 5%;
+    width: 100%;
+  }
+  
+  /* Increase touch targets for mobile */
+  input, select, button {
+    height: 44px;
+  }
+  
+  button {
+    border-radius: 22px;
+    font-size: 15px;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+  }
+  
+  h3 {
+    font-size: 1.2rem;
+  }
+  
+  /* Make the canvas responsive */
+  #signalCanvas {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+  }
+  
+  #tradeoffChart {
+    height: 200px !important;
+  }
+  
+  .v-instruction-container {
+    width: 95%;
+    margin: 0 auto;
+  }
+  
+  .v-instruction-container h3 {
+    font-size: 1rem;
+  }
+  
+  .v-instruction-container ol li {
+    margin-bottom: 10px;
+  }
+}
+
+/* Additional fixes for very small screens */
+@media (max-width: 375px) {
+  .system-diagram {
+    min-height: 350px;
+  }
+  
+  .antenna {
+    width: 35px;
+    height: 35px;
+    margin: 3px;
+  }
+  
+  section .title {
+    font-size: 24px;
+  }
+  
+  .tab button {
+    font-size: 12px;
+    padding: 6px 3px;
+  }
+  
+  h2 {
+    font-size: 1.3rem;
+  }
+  
+  .info-box {
+    padding: 8px;
+  }
+  
+  .info-list li {
+    margin-bottom: 5px;
+  }
+  
+  #tradeoffChart {
+    height: 180px !important;
+  }
+}
+
+/* Improved Mobile Responsiveness */
+@media (max-width: 992px) {
+  .columns-container {
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .left-column, .right-column, .center-column {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+  }
+  
+  .info-box {
+    padding: 12px;
+  }
+  
+  button {
+    width: 80%;
+    max-width: 300px;
+    padding: 12px 5px;
+    margin: 10px auto;
+    display: block;
+  }
+}
+
+/* Enhanced Mobile Layout for Small Tablets and Large Phones */
+@media (max-width: 768px) {
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  
+  .form-group {
+    margin-bottom: 10px;
+  }
+  
+  label {
+    font-size: 14px;
+    margin-bottom: 3px;
+  }
+  
+  input, select {
+    height: 40px;
+    font-size: 16px; /* Keep 16px to prevent auto-zoom on iOS */
+  }
+  
+  .system-diagram {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    height: 350px;
+    position: relative;
+    overflow: visible;
+  }
+  
+  .antenna-column {
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  #signalCanvas {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+  }
+}
+
+/* Phone-Specific Optimizations */
+@media (max-width: 576px) {
+  .antenna {
+    width: 30px;
+    height: 30px;
+    margin: 4px 0;
+  }
+
+  .system-diagram {
+    height: 300px; /* Adjusted height for smaller screens */
+  }
+  
+  section .title {
+    font-size: 24px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+  }
+  
+  h2 {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+  
+  .info-box {
+    margin-top: 10px;
+  }
+  
+  .info-box h3 {
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+  
+  .info-list li {
+    font-size: 14px;
+    margin-bottom: 5px;
+  }
+  
+  #tradeoffChart {
+    height: 180px !important;
+  }
+  
+  .v-instruction-container h3 {
+    font-size: 14px;
+  }
+  
+  .v-instruction-container ol li {
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+}
+
+/* Extra Small Devices */
+@media (max-width: 375px) {
+  .system-diagram {
+    height: 250px;
+  }
+  
+  .antenna {
+    width: 25px;
+    height: 25px;
+    margin: 3px 0;
+  }
+  
+  #tradeoffChart {
+    height: 160px !important;
+  }
+  
+  button {
+    padding: 10px 5px;
+    font-size: 14px;
+  }
+  
+  .tab button {
+    padding: 8px 4px;
+    font-size: 12px;
+  }
+  
+  .info-box {
+    padding: 8px;
+  }
+  
+  .info-list li {
+    font-size: 12px;
+    line-height: 1.3;
+  }
+}
+
+/* Improve touch targets for all mobile devices */
+@media (max-width: 992px) {
+  button, input[type="number"], select {
+    min-height: 44px; /* Apple's recommended minimum touch target size */
+  }
+  
+  .tab button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  
+  /* Fix for button positioning on mobile */
+  #optimizeButton {
+    margin-top: 5px;
+  }
+}
+
+/* Fix for stacking columns properly on mobile */
+@media (max-width: 992px) {
+  .columns-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .left-column, .center-column, .right-column {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+  }
+  
+  /* Ensure proper column order on mobile */
+  .left-column {
+    order: 1;
+  }
+  
+  .center-column {
+    order: 2;
+  }
+  
+  .right-column {
+    order: 3;
   }
 }
