@@ -500,11 +500,12 @@ button {
   color: white;
   border: none;
   border-radius: 40px;
+  border-color: #000000;
   padding: 12px ;
   font-size: 16px;
   font-weight: 500;
   cursor: pointer;
-  width: 50%;
+
   margin-top: 15px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
@@ -986,6 +987,11 @@ button:active {
 
 /* Extra Small Devices */
 @media (max-width: 375px) {
+  .columns-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
   .system-diagram {
     height: 250px;
   }
@@ -1062,5 +1068,127 @@ button:active {
   
   .right-column {
     order: 3;
+  }
+}
+
+/* Fix for very small screens (350px width and below) */
+@media (max-width: 400px) {
+  /* Fix horizontal scrolling and left space issues */
+  body, html {
+    overflow-x: hidden;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .max-width {
+    max-width: 100%;
+    padding: 0 10px;  /* Reduce side padding */
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .tabcontent {
+    padding: 6px 5px; /* Reduce horizontal padding */
+  }
+  
+  /* Fix container spacing */
+  .columns-container {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .left-column, .center-column, .right-column {
+    padding: 10px;  /* Reduce padding */
+    margin: 5px 0;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+  
+  /* Adjust form elements */
+  .form-group {
+    margin-bottom: 8px;
+  }
+  
+  /* Remove excess horizontal padding in instruction container */
+  .v-content {
+    padding-left: 5% !important;
+    padding-right: 5% !important;
+  }
+  
+  /* Make sure columns fill width */
+  .column {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+  
+  /* Ensure the system diagram stays within bounds */
+  .system-diagram {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    height: 220px; /* Further reduce height */
+  }
+  
+  /* Make buttons better fit small screens */
+  .form-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  button {
+    width: 100%;
+    max-width: 100%;
+    margin-top: 5px;
+    padding: 10px 5px;
+  }
+}
+
+/* Extra specific fixes for extremely small screens */
+@media (max-width: 350px) {
+  /* Ensure all content fits within viewport */
+  .antenna {
+    width: 20px;
+    height: 20px;
+    margin: 2px 0;
+  }
+  
+  h2 {
+    font-size: 18px;
+  }
+  
+  h3 {
+    font-size: 14px;
+  }
+  
+  .info-box {
+    padding: 5px;
+  }
+  
+  /* Reduce all margins to minimum */
+  .columns-container, .left-column, .center-column, .right-column {
+    margin: 3px 0;
+    gap: 5px;
+  }
+  
+  /* Ensure form controls are properly sized */
+  input, select {
+    padding: 5px;
+    height: 36px;
+  }
+  
+  label {
+    font-size: 12px;
+    margin-bottom: 2px;
+  }
+  
+  /* Make sure there's no overflow */
+  #tradeoffChart {
+    height: 140px !important;
   }
 }
