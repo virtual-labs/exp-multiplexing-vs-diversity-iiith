@@ -4,9 +4,12 @@ In multiplexing, we decompose the MIMO  channel into parallel SISO channels. The
 
 Consider the following scenario: We have 4 transmit antennas, and 4 receive antennas. If we want a multiplexing gain of 2, we can have the following visualization
 
-<img src="./images/DivVsMux.png">
+<p align="center">
+<img src="./images/DivVsMux.png" width="430">
+</p>
 
 If the multiplexing gain of the system is m, then the optimal diversity gain that can be achieved is given as $d = (N_t - m)(N_r - m)$ and can be observed in the following plot
 
-<img src="./images/exp7_1.png">
-
+<p align="center">
+<img src="./images/exp7_1.png" width="400">
+</p>
