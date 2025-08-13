@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<link rel="stylesheet" href="css/main.css">
+	<title>Spatial Diversity Simulation</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+	  crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/virtual-labs/virtual-style@0.0.8-b/css/style.min.css">
+
+</head>
+
+<body>
+
+	<div class="columns is-centered">
+		<div class="column is-one-quarter v-instruction-title">
+			Tasks
+		</div>
+		<div class="column is-half text-center">
+			<div class="tab d-flex justify-content-center">
+				<button class="tablinks btn-sm" onclick="openPart(event, 'task1')" id="default">Diversity vs Multiplexing</button>
+			</div>
+		</div>
+		<div class="column is-one-quarter">
+			<!-- Empty column for balance -->
+		</div>
+	</div>
+
+	<div id="task1" class="tabcontent">
+		<h2 class="title text-center" style="margin-top: 50px;">Diversity vs Multiplexing</h2>
+		<section class="fre" id="TASK1">
+			<div class="max-width">
+				
+				<div class="responsive-notice d-md-none mb-3 alert alert-info" style="margin-bottom:2%;">
+					<small>please scroll down to see results and simulation</small>
+				</div>
+				<hr>
+				<div class="columns is-centered">
+					<div class="v-collapsible-instruction-container v-instruction-container" style="margin-top: 2%;">
+						<div class="v-collapsible is-size-5">Instructions</div>
+						<div class="v-content" style="text-align: left; padding-left:10%; padding-right: 10%;">
+							<h3> <b> To understand the diversity-multiplexing tradeoff in MIMO systems, follow these steps: </b> </h3>
+							<br>
+							<h3>
+								<ol>
+									<li>Begin by observing the default 2×2 MIMO configuration and note the maximum values for diversity gain (reliability) and multiplexing gain (data rate).</li>
+									<li>Experiment with different numbers of transmit (Tx) and receive (Rx) antennas to see how they affect the maximum achievable diversity and multiplexing gains.</li>
+									<li>When in "Fixed Multiplexing (R)" mode, adjust the R value to see how prioritizing data rate reduces the available diversity gain.</li>
+									<li>Switch to "Fixed Diversity (Pe)" mode to see how prioritizing reliability affects the achievable multiplexing gain.</li>
+									<li>Observe how the operating point (red dot) moves along the tradeoff curve as you adjust parameters.</li>
+									<li>Note that the maximum multiplexing gain equals min(Nt, Nr) while the maximum diversity gain equals Nt × Nr.</li>
+									<li>The SNR parameter affects the absolute performance but not the fundamental tradeoff relationship.</li>
+								</ol>
+							</h3>
+							<p style="font-style: italic; margin-top: 15px;">This experiment demonstrates the fundamental diversity-multiplexing tradeoff described by Zheng and Tse, showing that increasing one gain necessarily comes at the expense of the other.</p>
+							<br>
+						</div>
+					</div>
+				</div>
+
+
+				<!-- Improved container structure for better responsiveness -->
+				<div class="columns-container">
+					<div class="left-column box">
+						<h2>System Parameters</h2>
+						<form id="parametersForm">
+							<div class="form-row">
+								<div class="form-group">
+									<label for="txAntennas">Tx Antennas (Nt)</label>
+									<input type="number" id="txAntennas" min="1" max="8" value="2" onchange="validateAntennaInput(this, 'txAntennaError')" inputmode="numeric">
+									<small id="txAntennaError" class="error-message alert alert-danger" style="display: none; padding: 2px 8px; margin-top: 5px; border-radius: 4px;">Please enter a value between 1 and 8</small>
+								</div>
+								<div class="form-group">
+									<label for="rxAntennas">Rx Antennas (Nr)</label>
+									<input type="number" id="rxAntennas" min="1" max="8" value="2" onchange="validateAntennaInput(this, 'rxAntennaError')" inputmode="numeric">
+									<small id="rxAntennaError" class="error-message alert alert-danger" style="display: none; padding: 2px 8px; margin-top: 5px; border-radius: 4px;">Please enter a value between 1 and 8</small>
+								</div>
+								<script>
+									function validateAntennaInput(input, errorId) {
+										const value = parseInt(input.value);
+										const errorElement = document.getElementById(errorId);
+										
+										if (value < 1 || value > 8 || isNaN(value)) {
+											errorElement.style.display = 'block';
+											input.value = Math.max(1, Math.min(8, isNaN(value) ? 1 : value));
+										} else {
+											errorElement.style.display = 'none';
+										}
+									}
+								</script>
+							</div>
+							<div class="form-group">
+								<label for="snr">SNR (dB)</label>
+								<input type="number" id="snr" min="0" max="30" value="10" inputmode="numeric">
+							</div>
+							<div class="form-group">
+								<label for="mode">Optimization Mode</label>
+								<select id="mode">
+									<option value="multiplexing">Fixed Multiplexing (R)</option>
+									<option value="diversity">Fixed Diversity Gain (d)</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label id="fixedValueLabel" for="fixedValue">Fixed Rate (R)</label>
+								<input type="number" id="fixedValue" step="0.1" min="0.1" max="8" value="2" inputmode="decimal">
+							</div>
+							<div class="form-buttons">
+								<button type="button" id="generateButton">Generate</button> 
+								<button type="button" id="optimizeButton" class="btn btn-secondary mt-2" style="background-color:red;">Optimize Connections</button>
+							</div>
+						</form>
+					</div>
+					
+					<div class="center-column box">
+						<div id="systemDiagramCard">
+					
+							<div class="system-diagram">
+								<div class="antenna-column">
+									<h2>Transmitter</h2>
+									<div id="txColumn"></div>
+								</div>
+								
+								<canvas id="signalCanvas"></canvas>
+								
+								<div class="antenna-column">
+									<h2>Receiver</h2>
+									<div id="rxColumn"></div>
+								</div>
+							</div>
+							<hr>
+							<div class="info-box">
+								<h3 class="info-title">Explanation:</h3>
+								<div class="info-content">
+									<p id="explanation1">
+										The diversity-multiplexing tradeoff (DMT) shows the fundamental relationship between reliability (diversity gain) 
+										and data rate (multiplexing gain) in MIMO wireless systems. For a 2×2 MIMO system, the 
+										maximum diversity gain is 4 and the maximum multiplexing gain is 2.
+									</p>
+									<p id="explanation2">
+										With fixed multiplexing gain r = 2, the achievable diversity gain is approximately 0.0.
+									</p>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					<div class="right-column box">
+						<div id="tradeoffCurveCard">
+							<h2>Tradeoff Curve</h2>
+							<div style="width: 100%; height: auto;">
+								<canvas id="tradeoffChart"></canvas>
+							</div>
+							<div class="info-box">
+								<h3>Key Points:</h3>
+								<ul class="info-list">
+									<li>Maximum diversity gain: <span id="maxDiversity">N/A</span></li>
+									<li>Maximum multiplexing gain: <span id="maxMultiplexing">N/A</span></li>
+									<li>Operating point: r = <span id="operatingR">?</span>, d = <span id="operatingD">?</span></li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</section>
+	</div>
+
+	<script src="./js/main.js"></script>
+	<script src="https://cdn.jsdelivr.net/gh/virtual-labs/virtual-style@0.0.8-b/js/script.js"></script>
+
+<script src="../assets/js/iframeResize.js"></script>
+        
+        </body>
+
+</html>
