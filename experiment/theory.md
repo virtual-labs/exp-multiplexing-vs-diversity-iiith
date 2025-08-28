@@ -12,7 +12,7 @@ For a given multiplexing gain $m$, then the optimal diversity gain that can be a
 
 $$ d = (N_t - m)(N_r - m) $$.
 
-The optimal multiplexing and diversity trade-off can be visualized from the following plot.[ref]
+The optimal multiplexing and diversity trade-off can be visualized from the following plot [2].
 
 <p align="center">
 <img src="./images/exp7_1.png" width="400">
