@@ -123,11 +123,14 @@ window.addEventListener('resize', function() {
 function init() {
     updateFixedValueLabel();
     isOptimizedDiagramView = false;
-    updateSystem(); // Initial call to setup default view
+    updateSystem();
     systemDiagramCard.style.display = 'block';
     tradeoffCurveCard.style.display = 'block';
     channelMatrixCard.style.display = 'block';
     optimizeButton.style.display = 'inline-block';
+    
+    // Initialize sum capacity display
+    document.getElementById('sumCapacityOutput').textContent = '0.00 bps/Hz';
 }
 
 /**
@@ -206,6 +209,28 @@ function optimizeSystemConnections() {
     };
 }
 
+function updateSumCapacityFromSVD(svd, numMuxStreams) {
+    if (!svd || !svd.S) return;
+    
+    const singularValues = svd.S;
+    const baseSNR_dB = 10; // Reference SNR
+    const snr_linear = Math.pow(10, baseSNR_dB / 10);
+    
+    let actualSumCapacity = 0;
+    const activeStreams = Math.min(numMuxStreams, singularValues.length);
+    
+    for (let i = 0; i < activeStreams; i++) {
+        const s_i = singularValues[i];
+        if (s_i > 1e-9) { // Avoid numerical issues
+            const streamSNR = snr_linear * s_i * s_i;
+            actualSumCapacity += Math.log2(1 + streamSNR);
+        }
+    }
+    
+    // Update both displays
+    document.getElementById('sumCapacityOutput').textContent = `${actualSumCapacity.toFixed(2)} bps/Hz`;
+    document.getElementById('capacityOutput').textContent = `${actualSumCapacity.toFixed(2)} bps/Hz`;
+}
 
 // --- Drawing and Rendering Functions ---
 
@@ -413,21 +438,56 @@ function calculateTradeoffCurve(Nt, Nr, mode, fixedValue) {
     maxDiversitySpan.textContent = (Nt * Nr).toFixed(1);
     maxMultiplexingSpan.textContent = minAntennas.toFixed(1);
 
+    let r_op, d_op;
     if (mode === 'multiplexing') {
-        let r_op = Math.max(0, Math.min(fixedValue, minAntennas));
+        r_op = Math.max(0, Math.min(fixedValue, minAntennas));
         operatingRSpan.textContent = r_op.toFixed(1);
         const diversityGain = (Nt - r_op) * (Nr - r_op);
-        operatingDSpan.textContent = Math.max(0, diversityGain).toFixed(1);
+        d_op = Math.max(0, diversityGain);
+        operatingDSpan.textContent = d_op.toFixed(1);
     } else {
-        let d_op = Math.max(0, Math.min(fixedValue, Nt * Nr));
+        d_op = Math.max(0, Math.min(fixedValue, Nt * Nr));
         operatingDSpan.textContent = d_op.toFixed(1);
         const term_under_sqrt = Math.pow(Nt - Nr, 2) + 4 * d_op;
-        let r_calc = (term_under_sqrt < 0) ? 0 : ((Nt + Nr) - Math.sqrt(term_under_sqrt)) / 2;
-        r_calc = Math.max(0, Math.min(r_calc, minAntennas));
-        operatingRSpan.textContent = r_calc.toFixed(1);
+        r_op = (term_under_sqrt < 0) ? 0 : ((Nt + Nr) - Math.sqrt(term_under_sqrt)) / 2;
+        r_op = Math.max(0, Math.min(r_op, minAntennas));
+        operatingRSpan.textContent = r_op.toFixed(1);
     }
+
+    // Calculate and display sum capacity
+    calculateAndDisplaySumCapacity(r_op, Nt, Nr);
 }
 
+function calculateAndDisplaySumCapacity(multiplexingGain, Nt, Nr) {
+    // Assume a reference SNR of 10 dB for capacity calculation
+    const referenceSNR_dB = 10;
+    const snr_linear = Math.pow(10, referenceSNR_dB / 10);
+    
+    // Sum capacity calculation using water-filling principle
+    // For theoretical calculation, assume equal power allocation
+    const numStreams = Math.floor(multiplexingGain);
+    const fractionalStream = multiplexingGain - numStreams;
+    
+    let sumCapacity = 0;
+    
+    // Full streams contribution
+    for (let i = 0; i < numStreams; i++) {
+        // Assume equal singular values for theoretical calculation
+        // In practice, this would come from the actual channel matrix
+        const effectiveSNR = snr_linear / Math.min(Nt, Nr); // Power divided among streams
+        sumCapacity += Math.log2(1 + effectiveSNR);
+    }
+    
+    // Fractional stream contribution (if any)
+    if (fractionalStream > 0) {
+        const effectiveSNR = snr_linear / Math.min(Nt, Nr);
+        sumCapacity += fractionalStream * Math.log2(1 + effectiveSNR);
+    }
+    
+    // Display the result
+    const sumCapacitySpan = document.getElementById('sumCapacityOutput');
+    sumCapacitySpan.textContent = `${sumCapacity.toFixed(2)} bps/Hz`;
+}
 
 // --- UI Update and Display Functions ---
 
