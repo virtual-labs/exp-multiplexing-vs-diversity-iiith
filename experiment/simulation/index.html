@@ -16,6 +16,11 @@
         <div class="max-width">
             <h2 class="title">Diversity-Multiplexing Trade-off Simulation</h2>
 
+			<div class="tab-nav">
+                <button class="tab-link active" onclick="openTab(event, 'simulationTab')">Simulation</button>
+                <button class="tab-link" onclick="openTab(event, 'performanceTab')">Performance Analysis</button>
+            </div>
+
             <details class="instructions-dropdown">
                 <summary>
                     <h3>Instructions</h3>
@@ -38,11 +43,6 @@
                     </ol>
                 </div>
             </details>
-
-            <div class="tab-nav">
-                <button class="tab-link active" onclick="openTab(event, 'simulationTab')">Simulation</button>
-                <button class="tab-link" onclick="openTab(event, 'performanceTab')">Performance Analysis</button>
-            </div>
 
             <div id="simulationTab" class="tab-content" style="display: block;">
                 <div class="columns-container">

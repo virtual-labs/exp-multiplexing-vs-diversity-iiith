@@ -241,19 +241,25 @@ h4 {
 /* === Tab Navigation === */
 .tab-nav {
     display: flex;
+    justify-content: center; /* Center the tabs */
     border-bottom: 1px solid var(--border-color);
     margin-bottom: 20px;
+    background-color: var(--background-white);
+    border-radius: 12px 12px 0 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .tab-link {
     background: none;
     border: none;
-    padding: 12px 24px;
+    padding: 15px 30px;
     cursor: pointer;
     border-bottom: 3px solid transparent;
     font-weight: 500;
     font-size: 1rem;
     transition: all 0.3s ease;
+    text-align: center; /* Center align text */
+    min-width: 150px; /* Ensure consistent button width */
 }
 
 .tab-link:hover {
@@ -263,6 +269,7 @@ h4 {
 .tab-link.active {
     border-bottom-color: var(--primary-color);
     color: var(--primary-color);
+    background-color: rgba(37, 99, 235, 0.05);
 }
 
 .tab-content {
@@ -356,5 +363,23 @@ h4 {
     }
     #tradeoffChart {
         height: 350px !important;
+    }
+}
+
+/* Make tabs responsive on smaller screens */
+@media (max-width: 768px) {
+    .tab-nav {
+        flex-direction: column;
+    }
+    
+    .tab-link {
+        width: 100%;
+        border-bottom: 1px solid var(--border-color);
+        border-radius: 0;
+    }
+    
+    .tab-link.active {
+        border-bottom-color: var(--primary-color);
+        border-left: 3px solid var(--primary-color);
     }
 }
