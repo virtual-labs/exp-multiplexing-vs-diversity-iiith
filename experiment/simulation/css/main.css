@@ -277,20 +277,65 @@ h4 {
 }
 
 /* === Performance Analysis Specific === */
+/* === Enhanced Performance Analysis Styling === */
 .column-full {
     flex: 1;
     width: 100%;
 }
 
 .plot-status-message {
-    margin-top: 10px;
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 6px;
     font-size: 0.9rem;
     font-weight: 500;
+    min-height: 20px;
+    text-align: center;
+    transition: all 0.3s ease;
 }
 
 #poutChart {
     width: 100% !important;
-    height: 400px !important;
+    height: 450px !important;
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+}
+
+/* Enhanced card styling for performance tab */
+#performanceTab .card {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    border: none;
+}
+
+#performanceTab .card-header {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    color: white;
+    font-weight: 600;
+}
+
+#performanceTab .card-body {
+    background-color: #fafbfc;
+}
+
+/* Loading state styling */
+.plot-status-message[style*="color: rgb(245, 158, 11)"] {
+    background-color: #fef3c7;
+    border: 1px solid #f59e0b;
+    color: #92400e !important;
+}
+
+.plot-status-message[style*="color: rgb(22, 163, 74)"] {
+    background-color: #dcfce7;
+    border: 1px solid #16a34a;
+    color: #15803d !important;
+}
+
+.plot-status-message[style*="color: rgb(239, 68, 68)"] {
+    background-color: #fee2e2;
+    border: 1px solid #ef4444;
+    color: #dc2626 !important;
 }
 
 /* === Output & Table Styling === */

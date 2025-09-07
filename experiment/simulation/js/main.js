@@ -1,21 +1,15 @@
 // --- General UI Functions ---
-function openTab(evt, tabName) {
+function openPart(evt, name) {
     var i, tabcontent, tablinks;
-    
-    // Hide all tab content
-    tabcontent = document.getElementsByClassName("tab-content");
+    tabcontent = document.getElementsByClassName("tabcontent");
     for (i = 0; i < tabcontent.length; i++) {
         tabcontent[i].style.display = "none";
     }
-    
-    // Remove active class from all tab links
-    tablinks = document.getElementsByClassName("tab-link");
+    tablinks = document.getElementsByClassName("tablinks");
     for (i = 0; i < tablinks.length; i++) {
         tablinks[i].className = tablinks[i].className.replace(" active", "");
     }
-    
-    // Show the selected tab and mark button as active
-    document.getElementById(tabName).style.display = "block";
+    document.getElementById(name).style.display = "block";
     evt.currentTarget.className += " active";
 }
 
@@ -33,7 +27,6 @@ let rxElements = [];
 let tradeoffPoints = [];
 let channelMatrixH = [];
 let svdResult = null;
-let poutChart = null;
 
 let isOptimizedDiagramView = false;
 let lastCalculatedMultiplexingGain_r = 0;
@@ -62,9 +55,6 @@ const explanation2 = document.getElementById('explanation2');
 const signalCanvas = document.getElementById('signalCanvas');
 const tradeoffChartEl = document.getElementById('tradeoffChart');
 const tradeoffCtx = tradeoffChartEl.getContext('2d');
-
-document.getElementById('generate-plot-button').addEventListener('click', generatePerformancePlot);
-
 
 
 // --- Event Listeners ---
@@ -123,14 +113,11 @@ window.addEventListener('resize', function() {
 function init() {
     updateFixedValueLabel();
     isOptimizedDiagramView = false;
-    updateSystem();
+    updateSystem(); // Initial call to setup default view
     systemDiagramCard.style.display = 'block';
     tradeoffCurveCard.style.display = 'block';
     channelMatrixCard.style.display = 'block';
     optimizeButton.style.display = 'inline-block';
-    
-    // Initialize sum capacity display
-    document.getElementById('sumCapacityOutput').textContent = '0.00 bps/Hz';
 }
 
 /**
@@ -209,28 +196,6 @@ function optimizeSystemConnections() {
     };
 }
 
-function updateSumCapacityFromSVD(svd, numMuxStreams) {
-    if (!svd || !svd.S) return;
-    
-    const singularValues = svd.S;
-    const baseSNR_dB = 10; // Reference SNR
-    const snr_linear = Math.pow(10, baseSNR_dB / 10);
-    
-    let actualSumCapacity = 0;
-    const activeStreams = Math.min(numMuxStreams, singularValues.length);
-    
-    for (let i = 0; i < activeStreams; i++) {
-        const s_i = singularValues[i];
-        if (s_i > 1e-9) { // Avoid numerical issues
-            const streamSNR = snr_linear * s_i * s_i;
-            actualSumCapacity += Math.log2(1 + streamSNR);
-        }
-    }
-    
-    // Update both displays
-    document.getElementById('sumCapacityOutput').textContent = `${actualSumCapacity.toFixed(2)} bps/Hz`;
-    document.getElementById('capacityOutput').textContent = `${actualSumCapacity.toFixed(2)} bps/Hz`;
-}
 
 // --- Drawing and Rendering Functions ---
 
@@ -438,56 +403,21 @@ function calculateTradeoffCurve(Nt, Nr, mode, fixedValue) {
     maxDiversitySpan.textContent = (Nt * Nr).toFixed(1);
     maxMultiplexingSpan.textContent = minAntennas.toFixed(1);
 
-    let r_op, d_op;
     if (mode === 'multiplexing') {
-        r_op = Math.max(0, Math.min(fixedValue, minAntennas));
+        let r_op = Math.max(0, Math.min(fixedValue, minAntennas));
         operatingRSpan.textContent = r_op.toFixed(1);
         const diversityGain = (Nt - r_op) * (Nr - r_op);
-        d_op = Math.max(0, diversityGain);
-        operatingDSpan.textContent = d_op.toFixed(1);
+        operatingDSpan.textContent = Math.max(0, diversityGain).toFixed(1);
     } else {
-        d_op = Math.max(0, Math.min(fixedValue, Nt * Nr));
+        let d_op = Math.max(0, Math.min(fixedValue, Nt * Nr));
         operatingDSpan.textContent = d_op.toFixed(1);
         const term_under_sqrt = Math.pow(Nt - Nr, 2) + 4 * d_op;
-        r_op = (term_under_sqrt < 0) ? 0 : ((Nt + Nr) - Math.sqrt(term_under_sqrt)) / 2;
-        r_op = Math.max(0, Math.min(r_op, minAntennas));
-        operatingRSpan.textContent = r_op.toFixed(1);
+        let r_calc = (term_under_sqrt < 0) ? 0 : ((Nt + Nr) - Math.sqrt(term_under_sqrt)) / 2;
+        r_calc = Math.max(0, Math.min(r_calc, minAntennas));
+        operatingRSpan.textContent = r_calc.toFixed(1);
     }
-
-    // Calculate and display sum capacity
-    calculateAndDisplaySumCapacity(r_op, Nt, Nr);
 }
 
-function calculateAndDisplaySumCapacity(multiplexingGain, Nt, Nr) {
-    // Assume a reference SNR of 10 dB for capacity calculation
-    const referenceSNR_dB = 10;
-    const snr_linear = Math.pow(10, referenceSNR_dB / 10);
-    
-    // Sum capacity calculation using water-filling principle
-    // For theoretical calculation, assume equal power allocation
-    const numStreams = Math.floor(multiplexingGain);
-    const fractionalStream = multiplexingGain - numStreams;
-    
-    let sumCapacity = 0;
-    
-    // Full streams contribution
-    for (let i = 0; i < numStreams; i++) {
-        // Assume equal singular values for theoretical calculation
-        // In practice, this would come from the actual channel matrix
-        const effectiveSNR = snr_linear / Math.min(Nt, Nr); // Power divided among streams
-        sumCapacity += Math.log2(1 + effectiveSNR);
-    }
-    
-    // Fractional stream contribution (if any)
-    if (fractionalStream > 0) {
-        const effectiveSNR = snr_linear / Math.min(Nt, Nr);
-        sumCapacity += fractionalStream * Math.log2(1 + effectiveSNR);
-    }
-    
-    // Display the result
-    const sumCapacitySpan = document.getElementById('sumCapacityOutput');
-    sumCapacitySpan.textContent = `${sumCapacity.toFixed(2)} bps/Hz`;
-}
 
 // --- UI Update and Display Functions ---
 
@@ -628,189 +558,6 @@ function displaySVDResults(svd, numMuxStreams) {
     document.getElementById("svdAnalysisText").textContent = analysisText;
 }
 
-function generatePerformancePlot() {
-    const nt = parseInt(document.getElementById('plot-nt').value);
-    const nr = parseInt(document.getElementById('plot-nr').value);
-    const trials = Math.min(parseInt(document.getElementById('plot-trials').value), 1000); // Cap at 1000
-    const statusDiv = document.getElementById('plot-status');
-    
-    statusDiv.textContent = 'Generating plot...';
-    statusDiv.style.color = '#f59e0b';
-    
-    // Use setTimeout to allow UI to update
-    setTimeout(() => {
-        try {
-            const snrRange = [];
-            const outageProbs = [];
-            
-            // Reduced SNR range and step size for faster computation
-            for (let snr_dB = 0; snr_dB <= 25; snr_dB += 3) {
-                snrRange.push(snr_dB);
-                const outageProb = calculateOutageProbabilityFast(snr_dB, nt, nr, trials);
-                outageProbs.push(Math.max(1e-6, outageProb)); // Avoid log(0)
-            }
-            
-            renderOutageChart(snrRange, outageProbs, nt, nr);
-            statusDiv.textContent = `Plot generated with ${trials} samples per point.`;
-            statusDiv.style.color = '#16a34a';
-            
-        } catch (error) {
-            console.error('Error generating plot:', error);
-            statusDiv.textContent = 'Error generating plot. Please try again.';
-            statusDiv.style.color = '#ef4444';
-        }
-    }, 50);
-}
-
-function calculateOutageProbabilityFast(snr_dB, nt, nr, samples) {
-    const snr_linear = Math.pow(10, snr_dB / 10);
-    const targetRate = 1; // 1 bps/Hz
-    let outageCount = 0;
-    
-    // Use analytical approximation for high SNR, Monte Carlo for low SNR
-    if (snr_dB > 15) {
-        return calculateAnalyticalOutage(snr_linear, nt, nr, targetRate);
-    }
-    
-    // Simplified Monte Carlo with reduced samples
-    const reducedSamples = Math.min(samples, 500);
-    
-    for (let i = 0; i < reducedSamples; i++) {
-        // Simplified capacity calculation using Wishart eigenvalues
-        const capacity = calculateSimplifiedCapacity(nt, nr, snr_linear);
-        
-        if (capacity < targetRate) {
-            outageCount++;
-        }
-    }
-    
-    return outageCount / reducedSamples;
-}
-
-function calculateAnalyticalOutage(snr_linear, nt, nr, targetRate) {
-    // High-SNR analytical approximation for outage probability
-    const minAntennas = Math.min(nt, nr);
-    const diversityGain = nt * nr;
-    
-    // Simplified high-SNR outage approximation
-    const highSNROutage = Math.pow(targetRate / snr_linear, diversityGain / minAntennas);
-    
-    return Math.min(1, highSNROutage);
-}
-
-function calculateSimplifiedCapacity(nt, nr, snr_linear) {
-    // Simplified capacity using random eigenvalue approximation
-    const minDim = Math.min(nt, nr);
-    let capacity = 0;
-    
-    // Generate approximate eigenvalues using simple distribution
-    for (let i = 0; i < minDim; i++) {
-        // Approximate eigenvalue using exponential distribution
-        const lambda = -Math.log(Math.random());
-        capacity += Math.log2(1 + snr_linear * lambda / minDim);
-    }
-    
-    return capacity;
-}
-
-function generateRandomChannel(nr, nt) {
-    const H = [];
-    for (let i = 0; i < nr; i++) {
-        H[i] = [];
-        for (let j = 0; j < nt; j++) {
-            // Rayleigh fading channel (complex Gaussian)
-            const scale = 1 / Math.sqrt(2);
-            H[i][j] = {
-                re: (Math.random() * 2 - 1) * scale,
-                im: (Math.random() * 2 - 1) * scale
-            };
-        }
-    }
-    return H;
-}
-
-function calculateChannelCapacity(H, snr_linear) {
-    try {
-        // Calculate H*H^H for MIMO capacity
-        const HH_hermitian = multiplyComplexMatrices(H, conjugateTranspose(H));
-        
-        // Convert to real matrix for eigenvalue calculation
-        const realMatrix = HH_hermitian.map(row => row.map(cell => cell.re));
-        
-        // Calculate eigenvalues
-        const eigenResult = numeric.eig(realMatrix);
-        const eigenValues = eigenResult.lambda.x;
-        
-        // Calculate capacity using water-filling
-        let capacity = 0;
-        for (let i = 0; i < eigenValues.length; i++) {
-            const lambda = Math.max(0, eigenValues[i]);
-            capacity += Math.log2(1 + snr_linear * lambda);
-        }
-        
-        return capacity;
-    } catch (error) {
-        // Fallback: simple SISO capacity
-        return Math.log2(1 + snr_linear);
-    }
-}
-
-function renderOutageChart(snrRange, outageProbs, nt, nr) {
-    const canvas = document.getElementById('poutChart');
-    const ctx = canvas.getContext('2d');
-    
-    // Destroy existing chart if it exists
-    if (poutChart) {
-        poutChart.destroy();
-    }
-    
-    // Create new chart
-    poutChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: snrRange,
-            datasets: [{
-                label: `${nt}×${nr} MIMO Outage Probability`,
-                data: outageProbs,
-                borderColor: '#2563eb',
-                backgroundColor: 'rgba(37, 99, 235, 0.1)',
-                borderWidth: 2,
-                fill: false,
-                tension: 0.1
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: 'SNR (dB)'
-                    }
-                },
-                y: {
-                    type: 'logarithmic',
-                    title: {
-                        display: true,
-                        text: 'Outage Probability'
-                    },
-                    min: 0.0001,
-                    max: 1
-                }
-            },
-            plugins: {
-                title: {
-                    display: true,
-                    text: `Outage Probability vs SNR for ${nt}×${nr} MIMO System`
-                },
-                legend: {
-                    display: true
-                }
-            }
-        }
-    });
-}
 
 // --- Matrix Math and Display Helpers ---
 
