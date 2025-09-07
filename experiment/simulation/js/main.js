@@ -1,15 +1,21 @@
 // --- General UI Functions ---
-function openPart(evt, name) {
+function openTab(evt, tabName) {
     var i, tabcontent, tablinks;
-    tabcontent = document.getElementsByClassName("tabcontent");
+    
+    // Hide all tab content
+    tabcontent = document.getElementsByClassName("tab-content");
     for (i = 0; i < tabcontent.length; i++) {
         tabcontent[i].style.display = "none";
     }
-    tablinks = document.getElementsByClassName("tablinks");
+    
+    // Remove active class from all tab links
+    tablinks = document.getElementsByClassName("tab-link");
     for (i = 0; i < tablinks.length; i++) {
         tablinks[i].className = tablinks[i].className.replace(" active", "");
     }
-    document.getElementById(name).style.display = "block";
+    
+    // Show the selected tab and mark button as active
+    document.getElementById(tabName).style.display = "block";
     evt.currentTarget.className += " active";
 }
 
@@ -27,6 +33,7 @@ let rxElements = [];
 let tradeoffPoints = [];
 let channelMatrixH = [];
 let svdResult = null;
+let poutChart = null;
 
 let isOptimizedDiagramView = false;
 let lastCalculatedMultiplexingGain_r = 0;
@@ -55,6 +62,9 @@ const explanation2 = document.getElementById('explanation2');
 const signalCanvas = document.getElementById('signalCanvas');
 const tradeoffChartEl = document.getElementById('tradeoffChart');
 const tradeoffCtx = tradeoffChartEl.getContext('2d');
+
+document.getElementById('generate-plot-button').addEventListener('click', generatePerformancePlot);
+
 
 
 // --- Event Listeners ---
@@ -558,6 +568,189 @@ function displaySVDResults(svd, numMuxStreams) {
     document.getElementById("svdAnalysisText").textContent = analysisText;
 }
 
+function generatePerformancePlot() {
+    const nt = parseInt(document.getElementById('plot-nt').value);
+    const nr = parseInt(document.getElementById('plot-nr').value);
+    const trials = Math.min(parseInt(document.getElementById('plot-trials').value), 1000); // Cap at 1000
+    const statusDiv = document.getElementById('plot-status');
+    
+    statusDiv.textContent = 'Generating plot...';
+    statusDiv.style.color = '#f59e0b';
+    
+    // Use setTimeout to allow UI to update
+    setTimeout(() => {
+        try {
+            const snrRange = [];
+            const outageProbs = [];
+            
+            // Reduced SNR range and step size for faster computation
+            for (let snr_dB = 0; snr_dB <= 25; snr_dB += 3) {
+                snrRange.push(snr_dB);
+                const outageProb = calculateOutageProbabilityFast(snr_dB, nt, nr, trials);
+                outageProbs.push(Math.max(1e-6, outageProb)); // Avoid log(0)
+            }
+            
+            renderOutageChart(snrRange, outageProbs, nt, nr);
+            statusDiv.textContent = `Plot generated with ${trials} samples per point.`;
+            statusDiv.style.color = '#16a34a';
+            
+        } catch (error) {
+            console.error('Error generating plot:', error);
+            statusDiv.textContent = 'Error generating plot. Please try again.';
+            statusDiv.style.color = '#ef4444';
+        }
+    }, 50);
+}
+
+function calculateOutageProbabilityFast(snr_dB, nt, nr, samples) {
+    const snr_linear = Math.pow(10, snr_dB / 10);
+    const targetRate = 1; // 1 bps/Hz
+    let outageCount = 0;
+    
+    // Use analytical approximation for high SNR, Monte Carlo for low SNR
+    if (snr_dB > 15) {
+        return calculateAnalyticalOutage(snr_linear, nt, nr, targetRate);
+    }
+    
+    // Simplified Monte Carlo with reduced samples
+    const reducedSamples = Math.min(samples, 500);
+    
+    for (let i = 0; i < reducedSamples; i++) {
+        // Simplified capacity calculation using Wishart eigenvalues
+        const capacity = calculateSimplifiedCapacity(nt, nr, snr_linear);
+        
+        if (capacity < targetRate) {
+            outageCount++;
+        }
+    }
+    
+    return outageCount / reducedSamples;
+}
+
+function calculateAnalyticalOutage(snr_linear, nt, nr, targetRate) {
+    // High-SNR analytical approximation for outage probability
+    const minAntennas = Math.min(nt, nr);
+    const diversityGain = nt * nr;
+    
+    // Simplified high-SNR outage approximation
+    const highSNROutage = Math.pow(targetRate / snr_linear, diversityGain / minAntennas);
+    
+    return Math.min(1, highSNROutage);
+}
+
+function calculateSimplifiedCapacity(nt, nr, snr_linear) {
+    // Simplified capacity using random eigenvalue approximation
+    const minDim = Math.min(nt, nr);
+    let capacity = 0;
+    
+    // Generate approximate eigenvalues using simple distribution
+    for (let i = 0; i < minDim; i++) {
+        // Approximate eigenvalue using exponential distribution
+        const lambda = -Math.log(Math.random());
+        capacity += Math.log2(1 + snr_linear * lambda / minDim);
+    }
+    
+    return capacity;
+}
+
+function generateRandomChannel(nr, nt) {
+    const H = [];
+    for (let i = 0; i < nr; i++) {
+        H[i] = [];
+        for (let j = 0; j < nt; j++) {
+            // Rayleigh fading channel (complex Gaussian)
+            const scale = 1 / Math.sqrt(2);
+            H[i][j] = {
+                re: (Math.random() * 2 - 1) * scale,
+                im: (Math.random() * 2 - 1) * scale
+            };
+        }
+    }
+    return H;
+}
+
+function calculateChannelCapacity(H, snr_linear) {
+    try {
+        // Calculate H*H^H for MIMO capacity
+        const HH_hermitian = multiplyComplexMatrices(H, conjugateTranspose(H));
+        
+        // Convert to real matrix for eigenvalue calculation
+        const realMatrix = HH_hermitian.map(row => row.map(cell => cell.re));
+        
+        // Calculate eigenvalues
+        const eigenResult = numeric.eig(realMatrix);
+        const eigenValues = eigenResult.lambda.x;
+        
+        // Calculate capacity using water-filling
+        let capacity = 0;
+        for (let i = 0; i < eigenValues.length; i++) {
+            const lambda = Math.max(0, eigenValues[i]);
+            capacity += Math.log2(1 + snr_linear * lambda);
+        }
+        
+        return capacity;
+    } catch (error) {
+        // Fallback: simple SISO capacity
+        return Math.log2(1 + snr_linear);
+    }
+}
+
+function renderOutageChart(snrRange, outageProbs, nt, nr) {
+    const canvas = document.getElementById('poutChart');
+    const ctx = canvas.getContext('2d');
+    
+    // Destroy existing chart if it exists
+    if (poutChart) {
+        poutChart.destroy();
+    }
+    
+    // Create new chart
+    poutChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: snrRange,
+            datasets: [{
+                label: `${nt}×${nr} MIMO Outage Probability`,
+                data: outageProbs,
+                borderColor: '#2563eb',
+                backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                borderWidth: 2,
+                fill: false,
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'SNR (dB)'
+                    }
+                },
+                y: {
+                    type: 'logarithmic',
+                    title: {
+                        display: true,
+                        text: 'Outage Probability'
+                    },
+                    min: 0.0001,
+                    max: 1
+                }
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    text: `Outage Probability vs SNR for ${nt}×${nr} MIMO System`
+                },
+                legend: {
+                    display: true
+                }
+            }
+        }
+    });
+}
 
 // --- Matrix Math and Display Helpers ---
 

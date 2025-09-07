@@ -1,6 +1,18 @@
 /* === Google Fonts Import === */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Ubuntu:wght@500;700&display=swap');
 
+/* === CSS Variables for Easy Theming === */
+:root {
+    --primary-color: #2563eb;
+    --success-color: #16a34a;
+    --text-color: #333;
+    --border-color: #e0e0e0;
+    --background-light: #f8f9fa;
+    --background-white: #ffffff;
+    --font-primary: 'Poppins', sans-serif;
+    --font-secondary: 'Ubuntu', sans-serif;
+}
+
 /* === CSS Reset & Base Styles === */
 * {
     margin: 0;
@@ -14,11 +26,11 @@ html {
 }
 
 body {
-    font-family: 'Poppins', sans-serif;
-    color: #333;
-    background-color: #f8f9fa; /* A slightly softer background color */
+    font-family: var(--font-primary);
+    color: var(--text-color);
+    background-color: var(--background-light);
     line-height: 1.6;
-    overflow-x: hidden; /* Prevent horizontal scrollbars */
+    overflow-x: hidden;
 }
 
 /* === Custom Scrollbar === */
@@ -39,7 +51,7 @@ body {
 /* === Global Layout & Typography === */
 .max-width {
     max-width: 1600px;
-    padding: 0 20px; /* Adjusted padding for better spacing on all screens */
+    padding: 0 20px;
     margin: auto;
 }
 
@@ -49,14 +61,14 @@ section.fre {
 
 section .title {
     text-align: center;
-    font-family: 'Ubuntu', sans-serif;
-    font-size: 2rem; /* Using rem for better accessibility */
+    font-family: var(--font-secondary);
+    font-size: 2rem;
     font-weight: 700;
     margin-bottom: 30px;
 }
 
 h3 {
-    font-family: 'Ubuntu', sans-serif;
+    font-family: var(--font-secondary);
     font-size: 1.25rem;
     font-weight: 500;
 }
@@ -68,53 +80,91 @@ h4 {
 
 /* === Reusable Card Component === */
 .card {
-    border: 1px solid #e0e0e0;
+    border: 1px solid var(--border-color);
     border-radius: 12px;
-    background-color: #ffffff;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    background-color: var(--background-white);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     overflow: hidden;
+    margin-bottom: 20px;
 }
 
 .card-header {
     background-color: #f9fafb;
     padding: 12px 20px;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .card-body {
     padding: 20px;
 }
 
-/* Bootstrap margin utility class (if you need it) */
-.mb-4 {
-    margin-bottom: 1.5rem !important;
+/* === Instructions Dropdown === */
+.instructions-dropdown {
+    background-color: var(--background-white);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
 }
+.instructions-dropdown summary {
+    padding: 15px 20px;
+    cursor: pointer;
+    outline: none;
+    display: flex;
+    justify-content: center; /* Center content horizontally */
+    align-items: center;
+    list-style: none; /* Hide default marker */
+    position: relative;
+}
+.instructions-dropdown summary::-webkit-details-marker {
+    display: none;
+}
+.instructions-dropdown summary h3 {
+    margin: 0;
+}
+.instructions-dropdown summary::after {
+    content: '+';
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    transition: transform 0.2s ease-in-out;
+    position: absolute; /* Position relative to summary */
+    right: 20px;
+}
+.instructions-dropdown[open] > summary::after {
+    content: '−';
+}
+.instructions-content {
+    padding: 0px 20px 20px 45px;
+    border-top: 1px solid var(--border-color);
+}
+.instructions-content li {
+    margin-bottom: 10px;
+}
+.instructions-content ul {
+    margin-top: 8px;
+    padding-left: 20px;
+}
+
 
 /* === 3-Column Layout (Mobile First by default) === */
 .columns-container {
     display: flex;
-    flex-direction: column; /* Stacks columns on mobile */
+    flex-direction: column;
     gap: 20px;
     margin-top: 20px;
 }
-
-/* Order the columns for mobile view */
-.column-left   { order: 1; }
-.column-center { order: 2; }
-.column-right  { order: 3; }
+.column-center { order: -1; } /* Diagram on top for mobile */
 
 /* === Controls & Form Styling === */
 .controls .control-group {
     margin-bottom: 15px;
 }
-
 .controls label {
     display: block;
     font-weight: 500;
     margin-bottom: 5px;
     font-size: 0.9rem;
 }
-
 .controls input,
 .controls select {
     width: 100%;
@@ -122,10 +172,9 @@ h4 {
     border: 1px solid #ccc;
     border-radius: 8px;
     font-size: 1rem;
-    font-family: 'Poppins', sans-serif;
-    min-height: 44px; /* For better touch targets */
+    font-family: var(--font-primary);
+    min-height: 44px;
 }
-
 .controls button {
     width: 100%;
     padding: 12px;
@@ -138,118 +187,48 @@ h4 {
     margin-top: 10px;
     min-height: 44px;
 }
-
 .btn-primary {
-    background-color: #2563eb;
+    background-color: var(--primary-color);
     color: white;
 }
 .btn-primary:hover {
     background-color: #1d4ed8;
+    transform: translateY(-2px);
 }
-
 .btn-success {
-    background-color: #16a34a;
+    background-color: var(--success-color);
     color: white;
 }
 .btn-success:hover {
     background-color: #15803d;
+    transform: translateY(-2px);
 }
 
-/* === INSTRUCTIONS DROP-DOWN STYLING === */
-.instructions-dropdown {
-    background-color: #ffffff;
-    border: 1px solid #e0e0e0;
-    border-radius: 12px;
-    margin-bottom: 25px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-}
-
-.instructions-dropdown summary {
-    padding: 15px 20px;
-    cursor: pointer;
-    outline: none; /* Removes the default focus ring */
+/* === System Diagram Styling === */
+.system-diagram {
+    position: relative;
+    height: 350px;
+    width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    list-style: none; /* Hides the default triangle marker */
 }
-
-/* Style the default marker for browsers that show it */
-.instructions-dropdown summary::-webkit-details-marker {
-    display: none;
-}
-
-/* Custom Arrow Icon */
-.instructions-dropdown summary::after {
-    content: '+';
-    font-size: 1.5rem;
-    font-weight: 500;
-    color: #2563eb;
-    transition: transform 0.2s ease-in-out;
-}
-
-/* Center the title inside the instructions dropdown */
-.instructions-dropdown summary h3 {
-    flex-grow: 1; /* Allows the h3 to take up all available space */
-    text-align: center; /* Centers the text within the h3 element */
-    margin: 0; /* Removes any default margins */
-}
-
-/* Rotate the arrow when the dropdown is open */
-.instructions-dropdown[open] > summary::after {
-    content: '−';
-    transform: rotate(180deg);
-}
-
-.instructions-content {
-    padding: 0px 20px 20px 20px;
-    border-top: 1px solid #e0e0e0;
-}
-
-/* Style the list inside the instructions */
-.instructions-content ol {
-    padding-left: 25px;
-}
-
-.instructions-content li {
-    margin-bottom: 10px;
-}
-
-.instructions-content ul {
-    margin-top: 8px;
-    padding-left: 20px;
-}
-
-/* === System Diagram Styling (Corrected) === */
-.system-diagram {
-    position: relative;
-    height: 450px; /* Default height, can be adjusted in media queries */
-    width: 100%;
-    display: flex;
-    justify-content: space-between; /* Pushes antenna columns to the far left and right */
-    align-items: center;
-}
-
 .antenna-column {
     display: flex;
     flex-direction: column;
-    /* This is the key property to space antennas vertically */
-    justify-content: space-between; 
+    justify-content: space-around; /* Evenly spaces antennas */
     align-items: center;
-    /* The column must have a defined height for justify-content to work */
-    height: 100%; 
-    width: 50px; /* A fixed width for the antenna icons is more stable */
+    height: 90%; /* Use percentage for better scaling */
+    width: 50px;
 }
-
 .antenna {
-    width: 45px;
-    height: 45px;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 95V70M40 70h20M50 70L20 40M50 70l30-30M30 20h40" stroke="black" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="50" cy="10" r="7" fill="black"/></svg>');
+    width: 40px;
+    height: 40px;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 95 V70 M40 70 H60 M50 70 L30 50 M50 70 L70 50 M30 50 A 20 20 0 0 1 70 50 M20 40 A 30 30 0 0 1 80 40 M10 30 A 40 40 0 0 1 90 30" stroke="black" stroke-width="5" fill="none" stroke-linecap="round"/></svg>');
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
 }
-
 #signalCanvas {
     position: absolute;
     top: 0;
@@ -259,22 +238,68 @@ h4 {
     pointer-events: none;
 }
 
+/* === Tab Navigation === */
+.tab-nav {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 20px;
+}
+
+.tab-link {
+    background: none;
+    border: none;
+    padding: 12px 24px;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    font-weight: 500;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.tab-link:hover {
+    background-color: rgba(37, 99, 235, 0.1);
+}
+
+.tab-link.active {
+    border-bottom-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.tab-content {
+    display: none;
+}
+
+/* === Performance Analysis Specific === */
+.column-full {
+    flex: 1;
+    width: 100%;
+}
+
+.plot-status-message {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+#poutChart {
+    width: 100% !important;
+    height: 400px !important;
+}
+
 /* === Output & Table Styling === */
 #tradeoffChart {
     width: 100% !important;
     height: 250px !important;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border-color);
     display: block;
-    background-color: #fff;
+    background-color: var(--background-white);
     border-radius: 8px;
 }
-
 .metrics {
     margin-top: 15px;
     font-size: 0.9rem;
     line-height: 1.8;
 }
-
 .matrix {
     border-collapse: collapse;
     margin: 10px 0;
@@ -282,47 +307,44 @@ h4 {
     width: 100%;
     font-size: 0.9rem;
 }
-
 .matrix td {
-    border: 1px solid #ccc;
+    border: 1px solid var(--border-color);
     padding: 6px 10px;
     text-align: center;
 }
 .matrix .highlight {
     font-weight: bold;
-    color: #16a34a;
+    color: var(--success-color);
 }
 
 /* === DESKTOP LAYOUT (Tablet and larger) === */
 @media (min-width: 992px) {
     .columns-container {
-        flex-direction: row; /* Side-by-side layout */
+        flex-direction: row;
         align-items: flex-start;
     }
-
-    /* Define column proportions */
+    .column-left { order: 0; }  /* Reset order for desktop */
+    .column-center { order: 0; }
+    .column-right { order: 0; }
     .column-left {
         flex: 1;
         min-width: 320px;
     }
     .column-center {
-        flex: 2; /* Center column is wider */
+        flex: 2;
         min-width: 500px;
     }
     .column-right {
         flex: 1.2;
         min-width: 350px;
     }
-
     section .title {
-        font-size: 2.5rem; /* Larger title on desktop */
+        font-size: 2.5rem;
     }
-
     .system-diagram {
-        height: 450px; /* Taller diagram on desktop */
+        height: 450px;
     }
-
-     #tradeoffChart {
+    #tradeoffChart {
         height: 300px !important;
     }
 }
@@ -332,7 +354,6 @@ h4 {
     .system-diagram {
         height: 550px;
     }
-
     #tradeoffChart {
         height: 350px !important;
     }
