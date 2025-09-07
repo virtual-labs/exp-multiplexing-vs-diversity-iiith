@@ -15,7 +15,7 @@
 <body>
     <section class="fre">
         <div class="max-width">
-            <h2 class="title">Diversity-Multiplexing Tradeoff (DMT) Simulation</h2>
+            <h2 class="title">Diversity-Multiplexing Trade-off Simulation</h2>
 
 			<details class="instructions-dropdown">
 				<summary>
@@ -25,7 +25,7 @@
 					<ol>
 						<li><strong>Set Antennas:</strong> Use the controls to select the number of Transmit (N<sub>T</sub>) and Receive (N<sub>R</sub>) antennas.</li>
 						<li><strong>Choose Mode:</strong> Select whether you want to fix the data rate (Multiplexing Gain) or the reliability (Diversity Gain).</li>
-						<li><strong>Generate Channel:</strong> Click <strong>"Generate Channel"</strong>. This creates a random channel matrix (H) and displays the theoretical performance curve (DMT Curve).</li>
+						<li><strong>Generate Channel:</strong> Click <strong>"Generate Channel"</strong>. This creates a random channel matrix (H) and displays the theoretical performance curve (Trade-off Curve).</li>
 						<li><strong>Optimize System:</strong> Click <strong>"Optimize System"</strong>. This performs SVD on the channel to find the best possible sub-channels (eigenbeams).</li>
 						<li><strong>Analyze Results:</strong>
 							<ul>
@@ -103,7 +103,7 @@
 				<div class="column-right">
 					<div id="tradeoffCurveCard" class="card mb-4">
 						<div class="card-header">
-							<h4>DMT Curve</h4>
+							<h4>Trade-off Curve</h4>
 						</div>
 						<div class="card-body">
 							<canvas id="tradeoffChart" width="400" height="350"></canvas>
