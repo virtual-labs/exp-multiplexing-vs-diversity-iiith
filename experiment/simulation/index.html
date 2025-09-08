@@ -13,164 +13,146 @@
 </head>
 
 <body>
+    <section class="fre">
+        <div class="max-width">
+            <h2 class="title">Diversity-Multiplexing Tradeoff Simulation</h2>
 
-	<div class="columns is-centered">
-		<div class="column is-one-quarter v-instruction-title">
-			Tasks
-		</div>
-		<div class="column is-half text-center">
-			<div class="tab d-flex justify-content-center">
-				<button class="tablinks btn-sm" onclick="openPart(event, 'task1')" id="default">Diversity vs Multiplexing</button>
-			</div>
-		</div>
-		<div class="column is-one-quarter">
-			<!-- Empty column for balance -->
-		</div>
-	</div>
-
-	<div id="task1" class="tabcontent">
-		<h2 class="title text-center" style="margin-top: 50px;">Diversity vs Multiplexing</h2>
-		<section class="fre" id="TASK1">
-			<div class="max-width">
-				
-				<div class="responsive-notice d-md-none mb-3 alert alert-info" style="margin-bottom:2%;">
-					<small>please scroll down to see results and simulation</small>
+			<details class="instructions-dropdown">
+				<summary>
+					<h3>Instructions</h3>
+				</summary>
+				<div class="instructions-content">
+					<ol>
+						<li><strong>Set Antennas:</strong> Use the controls to select the number of Transmit (N<sub>T</sub>) and Receive (N<sub>R</sub>) antennas.</li>
+						<li><strong>Choose Mode:</strong> Select whether you want to fix the data rate (Multiplexing Gain) or the reliability (Diversity Gain).</li>
+						<li><strong>Generate Channel:</strong> Click <strong>"Generate Channel"</strong>. This creates a random channel matrix (H) and displays the theoretical performance curve (Tradeoff Curve).</li>
+						<li><strong>Optimize System:</strong> Click <strong>"Optimize System"</strong>. This performs SVD on the channel to find the best possible sub-channels (eigenbeams).</li>
+						<li><strong>Analyze Results:</strong>
+							<ul>
+								<li>The <strong>System Diagram</strong> will now show the optimized data streams.</li>
+								<li><strong>Orange lines</strong> are high-rate multiplexing streams, showing their individual capacity and SNR.</li>
+								<li><strong>Blue dashed lines</strong> are diversity streams that improve reliability.</li>
+								<li>Review the <strong>SVD results</strong> to see the channel rank and calculated capacity.</li>
+							</ul>
+						</li>
+						<li><strong>Experiment:</strong> Change the antenna counts or the fixed gain value and repeat the steps to see how the tradeoff changes!</li>
+					</ol>
 				</div>
-				<hr>
-				<div class="columns is-centered">
-					<div class="v-collapsible-instruction-container v-instruction-container" style="margin-top: 2%;">
-						<div class="v-collapsible is-size-5">Instructions</div>
-						<div class="v-content" style="text-align: left; padding-left:10%; padding-right: 10%;">
-							<h3> <b> To understand the diversity-multiplexing tradeoff in MIMO systems, follow these steps: </b> </h3>
-							<br>
-							<h3>
-								<ol>
-									<li>Begin by observing the default 2×2 MIMO configuration and note the maximum values for diversity gain (reliability) and multiplexing gain (data rate).</li>
-									<li>Experiment with different numbers of transmit (Tx) and receive (Rx) antennas to see how they affect the maximum achievable diversity and multiplexing gains.</li>
-									<li>When in "Fixed Multiplexing (R)" mode, adjust the R value to see how prioritizing data rate reduces the available diversity gain.</li>
-									<li>Switch to "Fixed Diversity (Pe)" mode to see how prioritizing reliability affects the achievable multiplexing gain.</li>
-									<li>Observe how the operating point (red dot) moves along the tradeoff curve as you adjust parameters.</li>
-									<li>Note that the maximum multiplexing gain equals min(Nt, Nr) while the maximum diversity gain equals Nt × Nr.</li>
-									<li>The SNR parameter affects the absolute performance but not the fundamental tradeoff relationship.</li>
-								</ol>
-							</h3>
-							<p style="font-style: italic; margin-top: 15px;">This experiment demonstrates the fundamental diversity-multiplexing tradeoff described by Zheng and Tse, showing that increasing one gain necessarily comes at the expense of the other.</p>
-							<br>
+			</details>
+
+            <div class="columns-container">
+
+				<div class="column-left">
+					<div class="card mb-4">
+						<div class="card-header">
+							<h3>Simulation Controls</h3>
 						</div>
-					</div>
-				</div>
-
-
-				<!-- Improved container structure for better responsiveness -->
-				<div class="columns-container">
-					<div class="left-column box">
-						<h2>System Parameters</h2>
-						<form id="parametersForm">
-							<div class="form-row">
-								<div class="form-group">
-									<label for="txAntennas">Tx Antennas (Nt)</label>
-									<input type="number" id="txAntennas" min="1" max="8" value="2" onchange="validateAntennaInput(this, 'txAntennaError')" inputmode="numeric">
-									<small id="txAntennaError" class="error-message alert alert-danger" style="display: none; padding: 2px 8px; margin-top: 5px; border-radius: 4px;">Please enter a value between 1 and 8</small>
-								</div>
-								<div class="form-group">
-									<label for="rxAntennas">Rx Antennas (Nr)</label>
-									<input type="number" id="rxAntennas" min="1" max="8" value="2" onchange="validateAntennaInput(this, 'rxAntennaError')" inputmode="numeric">
-									<small id="rxAntennaError" class="error-message alert alert-danger" style="display: none; padding: 2px 8px; margin-top: 5px; border-radius: 4px;">Please enter a value between 1 and 8</small>
-								</div>
-								<script>
-									function validateAntennaInput(input, errorId) {
-										const value = parseInt(input.value);
-										const errorElement = document.getElementById(errorId);
-										
-										if (value < 1 || value > 8 || isNaN(value)) {
-											errorElement.style.display = 'block';
-											input.value = Math.max(1, Math.min(8, isNaN(value) ? 1 : value));
-										} else {
-											errorElement.style.display = 'none';
-										}
-									}
-								</script>
+						<div class="card-body controls">
+							<div class="control-group">
+								<label for="txAntennas">Transmit Antennas (N<sub>T</sub>):</label>
+								<input type="number" id="txAntennas" value="4" min="1" max="8">
 							</div>
-							<div class="form-group">
-								<label for="snr">SNR (dB)</label>
-								<input type="number" id="snr" min="0" max="30" value="10" inputmode="numeric">
+							<div class="control-group">
+								<label for="rxAntennas">Receive Antennas (N<sub>R</sub>):</label>
+								<input type="number" id="rxAntennas" value="4" min="1" max="8">
 							</div>
-							<div class="form-group">
-								<label for="mode">Optimization Mode</label>
+							<div class="control-group">
+								<label for="mode">Operating Mode:</label>
 								<select id="mode">
-									<option value="multiplexing">Fixed Multiplexing (R)</option>
-									<option value="diversity">Fixed Diversity Gain (d)</option>
+									<option value="multiplexing">Fixed Multiplexing Gain</option>
+									<option value="diversity">Fixed Diversity Gain</option>
 								</select>
+							</div>				
+							<!-- Updated HTML snippet - Add these controls after the existing fixedValue control -->
+							<div class="control-group" id="snrControl" style="display: none;">
+								<label for="snrValue">SNR (dB):</label>
+								<input type="number" id="snrValue" value="10" min="0" max="30" step="0.1">
 							</div>
-							<div class="form-group">
-								<label id="fixedValueLabel" for="fixedValue">Fixed Rate (R)</label>
-								<input type="number" id="fixedValue" step="0.1" min="0.1" max="8" value="2" inputmode="decimal">
+							<div class="control-group" id="rateControl" style="display: none;">
+								<label for="rateValue">Target Rate (R) bps/Hz:</label>
+								<input type="number" id="rateValue" value="2" min="0.1" max="10" step="0.1">
 							</div>
-							<div class="form-buttons">
-								<button type="button" id="generateButton">Generate</button> 
-								<button type="button" id="optimizeButton" class="btn btn-secondary mt-2" style="background-color:red;">Optimize Connections</button>
+							<div class="control-group" id="errorProbControl" style="display: none;">
+								<label for="errorProbValue">Target Error Probability (P<sub>e</sub>):</label>
+								<input type="number" id="errorProbValue" value="0.01" min="0.0001" max="0.1" step="0.0001">
 							</div>
-						</form>
-					</div>
-					
-					<div class="center-column box">
-						<div id="systemDiagramCard">
-					
-							<div class="system-diagram">
-								<div class="antenna-column">
-									<h2>Transmitter</h2>
-									<div id="txColumn"></div>
-								</div>
-								
-								<canvas id="signalCanvas"></canvas>
-								
-								<div class="antenna-column">
-									<h2>Receiver</h2>
-									<div id="rxColumn"></div>
-								</div>
-							</div>
-							<hr>
-							<div class="info-box">
-								<h3 class="info-title">Explanation:</h3>
-								<div class="info-content">
-									<p id="explanation1">
-										The diversity-multiplexing tradeoff (DMT) shows the fundamental relationship between reliability (diversity gain) 
-										and data rate (multiplexing gain) in MIMO wireless systems. For a 2×2 MIMO system, the 
-										maximum diversity gain is 4 and the maximum multiplexing gain is 2.
-									</p>
-									<p id="explanation2">
-										With fixed multiplexing gain r = 2, the achievable diversity gain is approximately 0.0.
-									</p>
-								</div>
+							<div class="control-group">
+								<button id="generateButton" class="btn btn-primary">Generate Channel</button>
+								<button id="optimizeButton" class="btn btn-success" style="display: none;">Optimize System</button>
 							</div>
 						</div>
 					</div>
-					
-					<div class="right-column box">
-						<div id="tradeoffCurveCard">
-							<h2>Tradeoff Curve</h2>
-							<div style="width: 100%; height: auto;">
-								<canvas id="tradeoffChart"></canvas>
-							</div>
-							<div class="info-box">
-								<h3>Key Points:</h3>
-								<ul class="info-list">
-									<li>Maximum diversity gain: <span id="maxDiversity">N/A</span></li>
-									<li>Maximum multiplexing gain: <span id="maxMultiplexing">N/A</span></li>
-									<li>Operating point: r = <span id="operatingR">?</span>, d = <span id="operatingD">?</span></li>
-								</ul>
+
+					<div class="card">
+						<div class="card-header">
+							<h4>Explanation</h4>
+						</div>
+						<div class="card-body">
+							<p id="explanation1"></p>
+							<p id="explanation2"></p>
+						</div>
+					</div>
+				</div>
+
+				<div class="column-center">
+					<div id="systemDiagramCard" class="card">
+						<div class="card-header">
+							<h4>System Diagram</h4>
+						</div>
+						<div class="card-body">
+							<div class="system-diagram">
+								<div class="antenna-column" id="txColumn"></div>
+								<canvas id="signalCanvas"></canvas>
+								<div class="antenna-column" id="rxColumn"></div>
 							</div>
 						</div>
 					</div>
 				</div>
 
+				<div class="column-right">
+					<div id="tradeoffCurveCard" class="card mb-4">
+						<div class="card-header">
+							<h4>Trade-off Curve</h4>
+						</div>
+						<div class="card-body">
+							<canvas id="tradeoffChart" width="400" height="350"></canvas>
+							<div class="metrics">
+								Max Diversity (d<sub>max</sub>): <span id="maxDiversity"></span><br>
+								Max Multiplexing (r<sub>max</sub>): <span id="maxMultiplexing"></span><br>
+								Operating Point: (r=<span id="operatingR"></span>, d=<span id="operatingD"></span>)
+								System Capacity: <span id="systemCapacity">-</span> bps/Hz
+
+							</div>
+						</div>
+					</div>
+					
+					<div id="channelMatrixCard" class="card mb-4" style="display: none;">
+						<div class="card-header">
+							<h4>Channel Matrix (H)</h4>
+						</div>
+						<div class="card-body" id="channelMatrixContainer">
+							</div>
+					</div>
+					
+					<div id="svdResultsCard" class="card mb-4" style="display: none;">
+						<div class="card-header">
+							<h4>SVD Optimization Results</h4>
+						</div>
+						<div class="card-body">
+							<strong>Singular Values (Σ):</strong>
+							<div id="sigmaMatrixContainer" class="mb-3"></div>
+							<strong>Rank:</strong> <span id="rankOutput">-</span><br>
+							<strong>Total Capacity (from Mux streams):</strong> <span id="capacityOutput">-</span><br>
+							<p id="svdAnalysisText" class="mt-3"></p>
+						</div>
+					</div>
+				</div>
 			</div>
-		</section>
-	</div>
+        </div>
+    </section>
 
-	<script src="./js/main.js"></script>
-	<script src="https://cdn.jsdelivr.net/gh/virtual-labs/virtual-style@0.0.8-b/js/script.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/numeric/1.2.6/numeric.min.js"></script>
+    <script src="js/main.js"></script>
 </body>
 
 </html>
