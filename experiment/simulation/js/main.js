@@ -32,14 +32,23 @@ let isOptimizedDiagramView = false;
 let lastCalculatedMultiplexingGain_r = 0;
 
 // --- DOM Element References ---
+// --- DOM Element References (CORRECTED) ---
 const txAntennasInput = document.getElementById('txAntennas');
 const rxAntennasInput = document.getElementById('rxAntennas');
 const modeSelect = document.getElementById('mode');
-const fixedValueInput = document.getElementById('fixedValue');
-const fixedValueLabel = document.getElementById('fixedValueLabel');
 const generateButton = document.getElementById('generateButton');
 const optimizeButton = document.getElementById('optimizeButton');
 
+// New control elements
+const snrValueInput = document.getElementById('snrValue');
+const rateValueInput = document.getElementById('rateValue');
+const errorProbValueInput = document.getElementById('errorProbValue');
+const snrControl = document.getElementById('snrControl');
+const rateControl = document.getElementById('rateControl');
+const errorProbControl = document.getElementById('errorProbControl');
+const systemCapacitySpan = document.getElementById('systemCapacity');
+
+// Display elements
 const systemDiagramCard = document.getElementById('systemDiagramCard');
 const tradeoffCurveCard = document.getElementById('tradeoffCurveCard');
 const channelMatrixCard = document.getElementById('channelMatrixCard');
@@ -55,6 +64,22 @@ const explanation2 = document.getElementById('explanation2');
 const signalCanvas = document.getElementById('signalCanvas');
 const tradeoffChartEl = document.getElementById('tradeoffChart');
 const tradeoffCtx = tradeoffChartEl.getContext('2d');
+
+// Add event listeners for new controls
+snrValueInput.addEventListener('change', () => {
+    isOptimizedDiagramView = false;
+    updateSystem();
+});
+
+rateValueInput.addEventListener('change', () => {
+    isOptimizedDiagramView = false;
+    updateSystem();
+});
+
+errorProbValueInput.addEventListener('change', () => {
+    isOptimizedDiagramView = false;
+    updateSystem();
+});
 
 
 // --- Event Listeners ---
@@ -107,18 +132,31 @@ window.addEventListener('resize', function() {
 
 // --- Core Logic ---
 
-/**
- * Initializes the application state and UI.
- */
+// --- Updated init() function ---
 function init() {
     updateFixedValueLabel();
     isOptimizedDiagramView = false;
-    updateSystem(); // Initial call to setup default view
+    // Hide system diagram initially
+    systemDiagramCard.style.display = 'none';
+    tradeoffCurveCard.style.display = 'none';
+    channelMatrixCard.style.display = 'none';
+    optimizeButton.style.display = 'none';
+}
+
+// --- Updated generateButton event listener ---
+generateButton.addEventListener('click', function () {
+    isOptimizedDiagramView = false;
+    // Hide SVD/Optimization results from previous runs
+    svdResultsCard.style.display = 'none';
+    channelMatrixCard.style.display = 'block';
+    optimizeButton.textContent = "Optimize System";
+    optimizeButton.onclick = optimizeSystemConnections;
+    updateSystem();
+    // Show system diagram and other components after generating channel
     systemDiagramCard.style.display = 'block';
     tradeoffCurveCard.style.display = 'block';
-    channelMatrixCard.style.display = 'block';
     optimizeButton.style.display = 'inline-block';
-}
+});
 
 /**
  * Main function to update all components of the simulation.
@@ -127,7 +165,6 @@ function updateSystem() {
     const Nt = parseInt(txAntennasInput.value);
     const Nr = parseInt(rxAntennasInput.value);
     const mode = modeSelect.value;
-    const fixedValue = parseFloat(fixedValueInput.value);
 
     // Only generate a new matrix if not in the optimized view
     if (!isOptimizedDiagramView) {
@@ -135,8 +172,8 @@ function updateSystem() {
     }
     
     renderAntennas(Nt, Nr);
-    calculateTradeoffCurve(Nt, Nr, mode, fixedValue);
-    updateExplanation(Nt, Nr, mode, fixedValue);
+    calculateTradeoffCurve(Nt, Nr, mode, 0); // fixedValue not used anymore
+    updateExplanation(Nt, Nr, mode, 0);
     renderTradeoffChart();
     updateSystemDiagramVisualization();
 }
@@ -153,46 +190,28 @@ function optimizeSystemConnections() {
     isOptimizedDiagramView = true;
     svdResultsCard.style.display = 'block';
     
-    // --- 1. Calculate the target number of multiplexing streams ---
-    const Nt = parseInt(txAntennasInput.value);
-    const Nr = parseInt(rxAntennasInput.value);
-    const mode = modeSelect.value;
-    let fixedVal = parseFloat(fixedValueInput.value);
-    let numMuxStreams;
-
-    if (mode === 'multiplexing') {
-        numMuxStreams = Math.max(0, Math.min(fixedVal, Math.min(Nt, Nr)));
-    } else { // Diversity mode
-        let d_val = fixedVal;
-        const max_d = Nt * Nr;
-        d_val = Math.max(0, Math.min(d_val, max_d));
-        const term_under_sqrt = Math.pow(Nt - Nr, 2) + 4 * d_val;
-        if (d_val > max_d || term_under_sqrt < 0) {
-            numMuxStreams = 0;
-        } else {
-            numMuxStreams = ((Nt + Nr) - Math.sqrt(term_under_sqrt)) / 2;
-        }
-    }
-    numMuxStreams = Math.round(Math.max(0, Math.min(numMuxStreams, Math.min(Nt, Nr))));
+    // Get the calculated r value from the trade-off calculation
+    const r_op = parseFloat(operatingRSpan.textContent);
+    const numMuxStreams = Math.floor(r_op);
     lastCalculatedMultiplexingGain_r = numMuxStreams;
     
-    // --- 2. Perform SVD on the channel matrix ---
+    // Perform SVD (for completeness, though we're using calculated values)
     performSVD(channelMatrixH);
     
-    // --- 3. Display SVD results and metrics ---
+    // Display results
     displaySVDResults(svdResult, numMuxStreams);
     
-    // --- 4. Update the diagram to show eigenbeams ---
+    // Update diagram
     updateSystemDiagramVisualization();
     
-    // --- 5. Change button to "Return to Channel View" ---
+    // Change button functionality
     optimizeButton.textContent = "Return to Channel View";
     optimizeButton.onclick = () => {
         isOptimizedDiagramView = false;
         svdResultsCard.style.display = 'none';
         optimizeButton.textContent = "Optimize System";
         optimizeButton.onclick = optimizeSystemConnections;
-        updateSystem(); // Redraw the original channel view
+        updateSystem();
     };
 }
 
@@ -267,44 +286,56 @@ function drawOptimizedConnections(currentTxElements, currentRxElements, ctx, svd
 
     const singularValues = svd.S;
     const rank = singularValues.filter(s => s > 1e-9).length;
-    const max_s = singularValues[0] > 1e-9 ? singularValues[0] : 1;
-    const baseSNR_dB = 10; // Assume a base SNR of 10dB for calculations
+    const Nt = parseInt(txAntennasInput.value);
+    const Nr = parseInt(rxAntennasInput.value);
+    const snr_dB = parseFloat(snrValueInput.value);
+    const snr_linear = Math.pow(10, snr_dB / 10);
 
-    // Render antennas for the number of active streams (rank)
-    renderAntennas(rank, rank);
+    // Clear and redraw with actual antenna counts
+    renderAntennas(Nt, Nr);
     
-    // Use a timeout to allow DOM to update before drawing connections
     setTimeout(() => {
-        // Recalculate canvas size after antenna re-render
         signalCanvas.width = signalCanvas.parentElement.offsetWidth;
         signalCanvas.height = signalCanvas.parentElement.offsetHeight;
         ctx.clearRect(0, 0, signalCanvas.width, signalCanvas.height);
 
-        for (let i = 0; i < rank; i++) {
-            if (i >= txElements.length || i >= rxElements.length) continue;
-            
+        // Draw multiplexing connections (one-to-one parallel)
+        for (let i = 0; i < Math.min(numMuxStreams, Math.min(txElements.length, rxElements.length)); i++) {
             const tx = txElements[i];
             const rx = rxElements[i];
-            const s_i = singularValues[i];
-
-            const streamSNR_dB = baseSNR_dB + 10 * Math.log10(s_i * s_i);
             
-            if (i < numMuxStreams) { // Multiplexing Stream
-                ctx.strokeStyle = '#ff8c00'; // Orange
-                ctx.lineWidth = Math.max(1.5, 6 * (s_i / max_s));
-                ctx.setLineDash([]);
-                
-                const streamCapacity = Math.log2(1 + Math.pow(10, streamSNR_dB / 10));
-                drawConnection(tx, rx, ctx, `Mux ${i+1}: ${streamCapacity.toFixed(1)} bps/Hz | ${streamSNR_dB.toFixed(1)} dB`, '#ff8c00');
-
-            } else { // Diversity Stream
-                ctx.strokeStyle = '#3b82f6'; // Blue
-                ctx.lineWidth = Math.max(1.0, 4 * (s_i / max_s));
-                ctx.setLineDash([4, 4]);
-
-                drawConnection(tx, rx, ctx, `Div ${i+1}: ${streamSNR_dB.toFixed(1)} dB`, '#3b82f6');
-            }
+            ctx.strokeStyle = '#ff8c00'; // Orange for multiplexing
+            ctx.lineWidth = 3;
+            ctx.setLineDash([]);
+            
+            const streamCapacity = Math.log2(1 + snr_linear);
+            drawConnection(tx, rx, ctx, `Mux ${i+1}: ${streamCapacity.toFixed(1)} bps/Hz`, '#ff8c00');
         }
+
+        // Draw diversity connections (fully connected remaining antennas)
+        const remainingTxStart = numMuxStreams;
+        const remainingRxStart = numMuxStreams;
+        const remainingTx = txElements.slice(remainingTxStart);
+        const remainingRx = rxElements.slice(remainingRxStart);
+
+        ctx.strokeStyle = '#3b82f6'; // Blue for diversity
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([4, 4]);
+
+        remainingTx.forEach((tx, i) => {
+            remainingRx.forEach((rx, j) => {
+                drawConnection(tx, rx, ctx, null, '#3b82f6');
+            });
+        });
+
+        // Add diversity label
+        if (remainingTx.length > 0 && remainingRx.length > 0) {
+            const centerTx = remainingTx[Math.floor(remainingTx.length / 2)];
+            const centerRx = remainingRx[Math.floor(remainingRx.length / 2)];
+            const diversityGain = remainingTx.length * remainingRx.length;
+            drawConnection(centerTx, centerRx, ctx, `Diversity: d=${diversityGain}`, '#3b82f6');
+        }
+
         ctx.setLineDash([]);
     }, 100);
 }
@@ -403,19 +434,49 @@ function calculateTradeoffCurve(Nt, Nr, mode, fixedValue) {
     maxDiversitySpan.textContent = (Nt * Nr).toFixed(1);
     maxMultiplexingSpan.textContent = minAntennas.toFixed(1);
 
+    let r_op, d_op, systemCapacity = 0;
+    const snr_dB = parseFloat(snrValueInput.value) || 10; // Default fallback
+    const snr_linear = Math.pow(10, snr_dB / 10);
+
     if (mode === 'multiplexing') {
-        let r_op = Math.max(0, Math.min(fixedValue, minAntennas));
-        operatingRSpan.textContent = r_op.toFixed(1);
-        const diversityGain = (Nt - r_op) * (Nr - r_op);
-        operatingDSpan.textContent = Math.max(0, diversityGain).toFixed(1);
+        // Calculate r from R = r * log2(1 + SNR)
+        const targetRate = parseFloat(rateValueInput.value) || 2; // Default fallback
+        r_op = targetRate / Math.log2(1 + snr_linear);
+        r_op = Math.max(0, Math.min(r_op, minAntennas));
+        d_op = (Nt - r_op) * (Nr - r_op);
+        d_op = Math.max(0, d_op);
+        systemCapacity = r_op * Math.log2(1 + snr_linear);
     } else {
-        let d_op = Math.max(0, Math.min(fixedValue, Nt * Nr));
-        operatingDSpan.textContent = d_op.toFixed(1);
-        const term_under_sqrt = Math.pow(Nt - Nr, 2) + 4 * d_op;
-        let r_calc = (term_under_sqrt < 0) ? 0 : ((Nt + Nr) - Math.sqrt(term_under_sqrt)) / 2;
-        r_calc = Math.max(0, Math.min(r_calc, minAntennas));
-        operatingRSpan.textContent = r_calc.toFixed(1);
+        // Calculate d from P_e proportional to 1/(SNR)^d
+        const targetErrorProb = parseFloat(errorProbValueInput.value) || 0.01; // Default fallback
+        // d = log(P_e) / log(1/SNR) = -log(P_e) / log(SNR)
+        d_op = -Math.log(targetErrorProb) / Math.log(snr_linear);
+        d_op = Math.max(0, Math.min(d_op, Nt * Nr));
+        
+        // Solve for r from d = (Nt - r) * (Nr - r)
+        // This is a quadratic: r^2 - (Nt + Nr)r + (Nt*Nr - d) = 0
+        const a = 1;
+        const b = -(Nt + Nr);
+        const c = Nt * Nr - d_op;
+        const discriminant = b * b - 4 * a * c;
+        
+        if (discriminant >= 0) {
+            const r1 = (-b + Math.sqrt(discriminant)) / (2 * a);
+            const r2 = (-b - Math.sqrt(discriminant)) / (2 * a);
+            // Choose the smaller positive root (more conservative)
+            r_op = Math.max(0, Math.min(Math.min(r1, r2), minAntennas));
+        } else {
+            r_op = 0;
+        }
+        
+        // Recalculate d with the computed r
+        d_op = (Nt - r_op) * (Nr - r_op);
+        systemCapacity = r_op * Math.log2(1 + snr_linear);
     }
+
+    operatingRSpan.textContent = r_op.toFixed(2);
+    operatingDSpan.textContent = d_op.toFixed(2);
+    systemCapacitySpan.textContent = systemCapacity.toFixed(2);
 }
 
 
@@ -440,29 +501,20 @@ function updateExplanation(Nt, Nr, mode, fixedValue) {
     }
 }
 
-/**
- * Updates the label for the fixed value input based on the selected mode.
- */
+// --- Updated updateFixedValueLabel function ---
 function updateFixedValueLabel() {
     const Nt = parseInt(txAntennasInput.value);
     const Nr = parseInt(rxAntennasInput.value);
+    
     if (modeSelect.value === 'multiplexing') {
-        fixedValueLabel.textContent = 'Fixed Rate (R)';
-        fixedValueInput.min = '0';
-        fixedValueInput.max = Math.min(Nt, Nr).toString();
-        fixedValueInput.step = '0.1';
+        snrControl.style.display = 'block';
+        rateControl.style.display = 'block';
+        errorProbControl.style.display = 'none';
     } else {
-        fixedValueLabel.textContent = 'Fixed Diversity Gain (d)';
-        fixedValueInput.min = '0';
-        fixedValueInput.max = (Nt * Nr).toString();
-        fixedValueInput.step = '0.1';
+        snrControl.style.display = 'block';
+        rateControl.style.display = 'none';
+        errorProbControl.style.display = 'block';
     }
-    // Clamp value to new min/max
-    const currentVal = parseFloat(fixedValueInput.value);
-    const minVal = parseFloat(fixedValueInput.min);
-    const maxVal = parseFloat(fixedValueInput.max);
-    if (currentVal < minVal) fixedValueInput.value = minVal;
-    if (currentVal > maxVal) fixedValueInput.value = maxVal;
 }
 
 /**

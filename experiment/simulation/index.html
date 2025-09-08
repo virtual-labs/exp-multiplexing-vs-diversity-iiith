@@ -62,10 +62,19 @@
 									<option value="multiplexing">Fixed Multiplexing Gain</option>
 									<option value="diversity">Fixed Diversity Gain</option>
 								</select>
+							</div>				
+							<!-- Updated HTML snippet - Add these controls after the existing fixedValue control -->
+							<div class="control-group" id="snrControl" style="display: none;">
+								<label for="snrValue">SNR (dB):</label>
+								<input type="number" id="snrValue" value="10" min="0" max="30" step="0.1">
 							</div>
-							<div class="control-group">
-								<label id="fixedValueLabel" for="fixedValue">Fixed Rate (r):</label>
-								<input type="number" id="fixedValue" value="1" min="0" max="4" step="0.1">
+							<div class="control-group" id="rateControl" style="display: none;">
+								<label for="rateValue">Target Rate (R) bps/Hz:</label>
+								<input type="number" id="rateValue" value="2" min="0.1" max="10" step="0.1">
+							</div>
+							<div class="control-group" id="errorProbControl" style="display: none;">
+								<label for="errorProbValue">Target Error Probability (P<sub>e</sub>):</label>
+								<input type="number" id="errorProbValue" value="0.01" min="0.0001" max="0.1" step="0.0001">
 							</div>
 							<div class="control-group">
 								<button id="generateButton" class="btn btn-primary">Generate Channel</button>
@@ -111,6 +120,8 @@
 								Max Diversity (d<sub>max</sub>): <span id="maxDiversity"></span><br>
 								Max Multiplexing (r<sub>max</sub>): <span id="maxMultiplexing"></span><br>
 								Operating Point: (r=<span id="operatingR"></span>, d=<span id="operatingD"></span>)
+								System Capacity: <span id="systemCapacity">-</span> bps/Hz
+
 							</div>
 						</div>
 					</div>
@@ -131,7 +142,7 @@
 							<strong>Singular Values (Σ):</strong>
 							<div id="sigmaMatrixContainer" class="mb-3"></div>
 							<strong>Rank:</strong> <span id="rankOutput">-</span><br>
-							<strong>Total Capacity (from Mux streams):</strong> <span id="capacityOutput">-</span>
+							<strong>Total Capacity (from Mux streams):</strong> <span id="capacityOutput">-</span><br>
 							<p id="svdAnalysisText" class="mt-3"></p>
 						</div>
 					</div>

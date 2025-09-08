@@ -369,6 +369,97 @@ h4 {
     color: var(--success-color);
 }
 
+/* === Additional Control Styling === */
+#snrControl, #rateControl, #errorProbControl {
+    transition: all 0.3s ease;
+}
+
+/* Enhanced metrics section with capacity highlight */
+.metrics {
+    margin-top: 15px;
+    font-size: 0.9rem;
+    line-height: 1.8;
+}
+
+.metrics strong {
+    color: var(--primary-color);
+    font-size: 1rem;
+}
+
+/* Enhanced control group styling for better organization */
+.controls .control-group {
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.controls .control-group label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+    color: var(--text-color);
+}
+
+/* Special styling for mode-specific controls */
+#snrControl label,
+#rateControl label,
+#errorProbControl label {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+/* Input focus states for new controls */
+#snrValue:focus,
+#rateValue:focus,
+#errorProbValue:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+}
+
+/* Improved button spacing */
+.controls button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    margin-top: 10px;
+    min-height: 44px;
+}
+
+.controls button:not(:first-of-type) {
+    margin-left: 0;
+}
+
+/* Enhanced system capacity display */
+#systemCapacity {
+    font-weight: 700;
+    color: var(--success-color);
+    font-size: 1.1em;
+}
+
+/* Responsive adjustments for additional controls */
+@media (max-width: 768px) {
+    .controls .control-group {
+        margin-bottom: 12px;
+    }
+    
+    .controls label {
+        font-size: 0.85rem;
+    }
+    
+    .controls input,
+    .controls select {
+        padding: 8px;
+        font-size: 0.9rem;
+        min-height: 40px;
+    }
+}
+
 /* === DESKTOP LAYOUT (Tablet and larger) === */
 @media (min-width: 992px) {
     .columns-container {
