@@ -65,6 +65,23 @@ const signalCanvas = document.getElementById('signalCanvas');
 const tradeoffChartEl = document.getElementById('tradeoffChart');
 const tradeoffCtx = tradeoffChartEl.getContext('2d');
 
+// Add reference to regenerate button
+const regenerateButton = document.getElementById('regenerateButton');
+
+// Add event listener for regenerate button
+regenerateButton.addEventListener('click', function () {
+    isOptimizedDiagramView = false;
+    svdResultsCard.style.display = 'none';
+    optimizeButton.textContent = "Optimize System";
+    optimizeButton.onclick = optimizeSystemConnections;
+    
+    // Only regenerate the channel matrix, keep everything else
+    const Nt = parseInt(txAntennasInput.value);
+    const Nr = parseInt(rxAntennasInput.value);
+    generateAndDisplayChannelMatrix(Nr, Nt);
+    updateSystemDiagramVisualization();
+});
+
 // Add event listeners for new controls
 snrValueInput.addEventListener('change', () => {
     isOptimizedDiagramView = false;
@@ -85,7 +102,6 @@ errorProbValueInput.addEventListener('change', () => {
 // --- Event Listeners ---
 generateButton.addEventListener('click', function () {
     isOptimizedDiagramView = false;
-    // Hide SVD/Optimization results from previous runs
     svdResultsCard.style.display = 'none';
     channelMatrixCard.style.display = 'block';
     optimizeButton.textContent = "Optimize System";
@@ -94,6 +110,7 @@ generateButton.addEventListener('click', function () {
     systemDiagramCard.style.display = 'block';
     tradeoffCurveCard.style.display = 'block';
     optimizeButton.style.display = 'inline-block';
+    regenerateButton.style.display = 'inline-block'; // Show regenerate button
 });
 
 optimizeButton.addEventListener('click', optimizeSystemConnections);
@@ -279,7 +296,7 @@ function drawChannelConnections(currentTxElements, currentRxElements, ctx) {
 }
 
 /**
- * Draws the SVD-optimized eigenbeams.
+ * Draws the SVD-optimized eigenbeams with animation.
  */
 function drawOptimizedConnections(currentTxElements, currentRxElements, ctx, svd, numMuxStreams) {
     if (!svd || !svd.S) return;
@@ -297,46 +314,75 @@ function drawOptimizedConnections(currentTxElements, currentRxElements, ctx, svd
     setTimeout(() => {
         signalCanvas.width = signalCanvas.parentElement.offsetWidth;
         signalCanvas.height = signalCanvas.parentElement.offsetHeight;
-        ctx.clearRect(0, 0, signalCanvas.width, signalCanvas.height);
-
-        // Draw multiplexing connections (one-to-one parallel)
-        for (let i = 0; i < Math.min(numMuxStreams, Math.min(txElements.length, rxElements.length)); i++) {
-            const tx = txElements[i];
-            const rx = rxElements[i];
+        
+        // Animation parameters
+        let animationProgress = 0;
+        const animationDuration = 1000; // 1 second
+        const startTime = Date.now();
+        
+        function animate() {
+            const elapsed = Date.now() - startTime;
+            animationProgress = Math.min(elapsed / animationDuration, 1);
             
-            ctx.strokeStyle = '#ff8c00'; // Orange for multiplexing
-            ctx.lineWidth = 3;
+            // Easing function for smooth animation
+            const easeProgress = animationProgress < 0.5 
+                ? 2 * animationProgress * animationProgress 
+                : 1 - Math.pow(-2 * animationProgress + 2, 2) / 2;
+            
+            ctx.clearRect(0, 0, signalCanvas.width, signalCanvas.height);
+            
+            // Draw diversity connections (fading out)
+            const remainingTxStart = numMuxStreams;
+            const remainingRxStart = numMuxStreams;
+            const remainingTx = txElements.slice(remainingTxStart);
+            const remainingRx = txElements.slice(remainingRxStart);
+            
+            ctx.globalAlpha = 1 - easeProgress * 0.3; // Fade to 70% opacity
+            ctx.strokeStyle = '#3b82f6';
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([4, 4]);
+            
+            remainingTx.forEach((tx, i) => {
+                remainingRx.forEach((rx, j) => {
+                    drawConnection(tx, rx, ctx, null, '#3b82f6');
+                });
+            });
+            
+            // Draw multiplexing connections (fading in)
+            ctx.globalAlpha = easeProgress;
             ctx.setLineDash([]);
             
-            const streamCapacity = Math.log2(1 + snr_linear);
-            drawConnection(tx, rx, ctx, `Mux ${i+1}: ${streamCapacity.toFixed(1)} bps/Hz`, '#ff8c00');
+            for (let i = 0; i < Math.min(numMuxStreams, Math.min(txElements.length, rxElements.length)); i++) {
+                const tx = txElements[i];
+                const rx = rxElements[i];
+                
+                ctx.strokeStyle = '#ff8c00';
+                ctx.lineWidth = 3;
+                
+                const streamCapacity = Math.log2(1 + snr_linear);
+                drawConnection(tx, rx, ctx, `Mux ${i+1}: ${streamCapacity.toFixed(1)} bps/Hz`, '#ff8c00');
+            }
+            
+            // Add diversity label (fading in)
+            if (remainingTx.length > 0 && remainingRx.length > 0) {
+                ctx.globalAlpha = easeProgress;
+                const centerTx = remainingTx[Math.floor(remainingTx.length / 2)];
+                const centerRx = remainingRx[Math.floor(remainingRx.length / 2)];
+                const diversityGain = remainingTx.length * remainingRx.length;
+                ctx.setLineDash([4, 4]);
+                drawConnection(centerTx, centerRx, ctx, `Diversity: d=${diversityGain}`, '#3b82f6');
+            }
+            
+            ctx.globalAlpha = 1.0;
+            ctx.setLineDash([]);
+            
+            // Continue animation
+            if (animationProgress < 1) {
+                requestAnimationFrame(animate);
+            }
         }
-
-        // Draw diversity connections (fully connected remaining antennas)
-        const remainingTxStart = numMuxStreams;
-        const remainingRxStart = numMuxStreams;
-        const remainingTx = txElements.slice(remainingTxStart);
-        const remainingRx = rxElements.slice(remainingRxStart);
-
-        ctx.strokeStyle = '#3b82f6'; // Blue for diversity
-        ctx.lineWidth = 1.5;
-        ctx.setLineDash([4, 4]);
-
-        remainingTx.forEach((tx, i) => {
-            remainingRx.forEach((rx, j) => {
-                drawConnection(tx, rx, ctx, null, '#3b82f6');
-            });
-        });
-
-        // Add diversity label
-        if (remainingTx.length > 0 && remainingRx.length > 0) {
-            const centerTx = remainingTx[Math.floor(remainingTx.length / 2)];
-            const centerRx = remainingRx[Math.floor(remainingRx.length / 2)];
-            const diversityGain = remainingTx.length * remainingRx.length;
-            drawConnection(centerTx, centerRx, ctx, `Diversity: d=${diversityGain}`, '#3b82f6');
-        }
-
-        ctx.setLineDash([]);
+        
+        animate();
     }, 100);
 }
 
@@ -525,7 +571,7 @@ function updateFixedValueLabel() {
 }
 
 /**
- * Renders the DMT curve on its canvas.
+ * Renders the DMT curve on its canvas with proper ticks and labels.
  */
 function renderTradeoffChart() {
     if (tradeoffPoints.length === 0) return;
@@ -533,7 +579,7 @@ function renderTradeoffChart() {
     tradeoffChartEl.height = 350;
     const width = tradeoffChartEl.width;
     const height = tradeoffChartEl.height;
-    const padding = 50;
+    const padding = 60;
     tradeoffCtx.clearRect(0, 0, width, height);
 
     const Nt = parseInt(txAntennasInput.value);
@@ -541,25 +587,76 @@ function renderTradeoffChart() {
     const maxMultiplexingOnAxis = Math.max(1, Math.min(Nt, Nr));
     const maxDiversityOnAxis = Math.max(1, Nt * Nr);
     
+    // Draw DMT formula at the top
+    tradeoffCtx.fillStyle = '#666';
+    tradeoffCtx.font = '14px Arial';
+    tradeoffCtx.textAlign = 'center';
+    tradeoffCtx.fillText(`DMT: d = (Nt - r)(Nr - r) = (${Nt} - r)(${Nr} - r)`, width / 2, 20);
+    
     // Draw Axes
     tradeoffCtx.strokeStyle = '#333';
-    tradeoffCtx.lineWidth = 1;
+    tradeoffCtx.lineWidth = 2;
     tradeoffCtx.beginPath();
     tradeoffCtx.moveTo(padding, padding);
     tradeoffCtx.lineTo(padding, height - padding);
     tradeoffCtx.lineTo(width - padding, height - padding);
     tradeoffCtx.stroke();
     
-    // Draw Labels and Ticks (simplified for brevity, original logic is complex but fine)
-     tradeoffCtx.fillStyle = '#333';
-     tradeoffCtx.font = '12px Arial';
-     tradeoffCtx.textAlign = 'center';
-     tradeoffCtx.fillText('Multiplexing Gain (r)', width / 2, height - 15);
-     tradeoffCtx.save();
-     tradeoffCtx.translate(15, height / 2);
-     tradeoffCtx.rotate(-Math.PI / 2);
-     tradeoffCtx.fillText('Diversity Gain (d)', 0, 0);
-     tradeoffCtx.restore();
+    // Draw X-axis ticks and labels (Multiplexing Gain)
+    const numXTicks = Math.min(maxMultiplexingOnAxis, 8);
+    const xTickInterval = maxMultiplexingOnAxis / numXTicks;
+    tradeoffCtx.fillStyle = '#333';
+    tradeoffCtx.font = '11px Arial';
+    tradeoffCtx.textAlign = 'center';
+    tradeoffCtx.strokeStyle = '#333';
+    tradeoffCtx.lineWidth = 1;
+    
+    for (let i = 0; i <= numXTicks; i++) {
+        const value = i * xTickInterval;
+        const x = padding + (value / maxMultiplexingOnAxis) * (width - 2 * padding);
+        
+        // Draw tick
+        tradeoffCtx.beginPath();
+        tradeoffCtx.moveTo(x, height - padding);
+        tradeoffCtx.lineTo(x, height - padding + 5);
+        tradeoffCtx.stroke();
+        
+        // Draw label
+        tradeoffCtx.fillText(value.toFixed(1), x, height - padding + 18);
+    }
+    
+    // Draw Y-axis ticks and labels (Diversity Gain)
+    const numYTicks = Math.min(Math.ceil(maxDiversityOnAxis / 2), 8);
+    const yTickInterval = maxDiversityOnAxis / numYTicks;
+    tradeoffCtx.textAlign = 'right';
+    tradeoffCtx.textBaseline = 'middle';
+    
+    for (let i = 0; i <= numYTicks; i++) {
+        const value = i * yTickInterval;
+        const y = height - padding - (value / maxDiversityOnAxis) * (height - 2 * padding);
+        
+        // Draw tick
+        tradeoffCtx.beginPath();
+        tradeoffCtx.moveTo(padding, y);
+        tradeoffCtx.lineTo(padding - 5, y);
+        tradeoffCtx.stroke();
+        
+        // Draw label
+        tradeoffCtx.fillText(value.toFixed(0), padding - 10, y);
+    }
+    
+    // Draw axis labels
+    tradeoffCtx.textAlign = 'center';
+    tradeoffCtx.textBaseline = 'alphabetic';
+    tradeoffCtx.fillStyle = '#333';
+    tradeoffCtx.font = '13px Arial';
+    tradeoffCtx.fillText('Multiplexing Gain (r)', width / 2, height - 10);
+    
+    tradeoffCtx.save();
+    tradeoffCtx.translate(15, height / 2);
+    tradeoffCtx.rotate(-Math.PI / 2);
+    tradeoffCtx.fillText('Diversity Gain (d)', 0, 0);
+    tradeoffCtx.restore();
 
     // Draw Curve
     tradeoffCtx.strokeStyle = '#3b82f6';
