@@ -392,6 +392,9 @@ function generateAndDisplayChannelMatrix(nr, nt) {
 }
 
 /**
+ * Performs Singular Value Decomposition on a complex matrix H using math.js.
+ */
+/**
  * Performs Singular Value Decomposition on a complex matrix H.
  */
 function performSVD(H) {
@@ -400,13 +403,17 @@ function performSVD(H) {
         return;
     }
     try {
+        // Compute H^H * H (Hermitian of H times H)
         const HH_hermitian = multiplyComplexMatrices(conjugateTranspose(H), H);
         
+        // Extract real part for eigenvalue decomposition
         const realMatrix = HH_hermitian.map(row => row.map(cell => cell.re));
         
+        // Get eigenvalues
         const eigenResult = numeric.eig(realMatrix);
         const eigenValues = eigenResult.lambda.x;
         
+        // Singular values are square roots of eigenvalues, sorted descending
         const singularValues = eigenValues
             .map(val => Math.sqrt(Math.max(0, val)))
             .sort((a, b) => b - a);
