@@ -281,6 +281,72 @@
             color: #333;
         }
 
+        /* ===== Ensure transmitter & receiver always have a visible gap =====
+           These classes are intentionally robust and use `min-width` and
+           non-wrapping flex so the transmitter and receiver don't merge
+           at any screen size. If your simulation markup uses different
+           class names, the selectors below are broad enough to apply to
+           common names like .transmitter / .receiver / .antenna-placeholder
+        */
+        .sim-antenna-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 40px; /* default gap between TX and RX */
+            flex-wrap: nowrap; /* prevent wrapping that could collapse gap */
+        }
+
+        .transmitter,
+        .receiver {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 120px; /* keep each side wide enough */
+            margin: 0 12px;
+            box-sizing: border-box;
+        }
+
+        /* placeholders and images inside transmitter/receiver */
+        .transmitter .antenna-placeholder,
+        .receiver .antenna-placeholder,
+        .transmitter img,
+        .receiver img,
+        .antenna-placeholder,
+        .antenna-image {
+            display: block;
+            margin: 8px 0; /* gap between image and its label/placeholder */
+            max-width: 100%;
+            height: auto;
+        }
+
+        .antenna-placeholder {
+            width: 96px;
+            height: 96px;
+            border-radius: 8px;
+            background: #f7fbff;
+            border: 2px dashed #e6eefc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4b6ef6;
+            font-weight: 600;
+            box-sizing: border-box;
+        }
+
+        /* Make sure the gap doesn't collapse in smaller screens; reduce but keep minimum spacing */
+        @media (max-width: 900px) {
+            .sim-antenna-wrapper { gap: 24px !important; }
+            .transmitter, .receiver { min-width: 96px; }
+            .antenna-placeholder { width: 80px; height: 80px; }
+        }
+
+        @media (max-width: 600px) {
+            /* On very small screens, allow stacking but preserve separation between components */
+            .sim-antenna-wrapper { flex-wrap: wrap; gap: 18px !important; }
+            .transmitter, .receiver { min-width: 84px; margin: 0 8px; }
+            .antenna-placeholder { width: 72px; height: 72px; }
+        }
+
         .step-indicator {
             background: #e3f2fd;
             padding: 10px 15px;
