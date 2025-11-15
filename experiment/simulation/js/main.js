@@ -527,8 +527,12 @@
             ];
 
             // Dynamic layout
-            const marginX = Math.min(canvas.width * 0.08, 140);
-            const marginY = Math.min(canvas.height * 0.08, 80);
+            // Keep a minimum edge padding so transmitter/receiver graphics
+            // never get drawn off-canvas when the window is slightly reduced.
+            const minEdgePaddingX = 70; // min horizontal margin in px
+            const minEdgePaddingY = 40; // min vertical margin in px
+            const marginX = Math.max(Math.min(canvas.width * 0.08, 140), minEdgePaddingX);
+            const marginY = Math.max(Math.min(canvas.height * 0.08, 80), minEdgePaddingY);
             const txX = marginX;
             const rxX = canvas.width - marginX;
 
@@ -537,10 +541,13 @@
 
             if (systemState === 'optimized' && antennaConfig.groups && antennaConfig.groups.length > 0) {
                 const groups = antennaConfig.groups;
-                const gapBetweenGroups = 80; // Gap between different stream groups
-                const antennaSpacing = 45; // Spacing within a group
-                const boxPadding = 25; // Padding inside boxes
-                const extraBoxMargin = 15; // Extra margin to prevent box overlap
+                // Tune layout variables relative to canvas size so boxes and
+                // wires don't exceed the canvas bounds on narrow widths.
+                const gapBetweenGroups = Math.min(80, Math.max(40, canvas.height * 0.06)); // Gap between different stream groups
+                const antennaSpacing = Math.min(48, Math.max(28, canvas.height * 0.03)); // Spacing within a group
+                const boxPadding = Math.min(28, Math.max(12, canvas.height * 0.02)); // Padding inside boxes
+                const extraBoxMargin = Math.min(18, Math.max(8, canvas.height * 0.015)); // Extra margin to prevent box overlap
+                const boxInset = Math.min(45, Math.max(20, canvas.width * 0.04));
                 
                 // Calculate total height needed for TX (including box padding and margins)
                 let totalTxHeight = 0;
@@ -704,11 +711,16 @@
                         const rxTop = Math.min(...rxYs) - boxPadding;
                         const rxBottom = Math.max(...rxYs) + boxPadding;
 
-                        const boxWidth = 70;
+                        const boxWidth = Math.min(90, Math.max(56, canvas.width * 0.06));
                         const txBoxLeft = txX + boxInset;
                         const txBoxRight = txBoxLeft + boxWidth;
                         const rxBoxRight = rxX - boxInset;
                         const rxBoxLeft = rxBoxRight - boxWidth;
+
+                        // Compute wire lengths but clamp to avoid drawing past canvas edges
+                        const maxRightAvailable = canvas.width - 10; // safety margin
+                        const outWireLen = Math.min(40, Math.max(10, maxRightAvailable - rxBoxRight));
+                        const inWireLen = Math.min(40, Math.max(10, txBoxLeft - 10));
 
                         // Determine colors
                         const isWeakest = antennaConfig.selectedMessage === g.index;
@@ -756,7 +768,7 @@
                         
                         // Draw input wire (single wire splitting to multiple TX antennas)
                         ctx.beginPath();
-                        ctx.moveTo(txBoxLeft - 40, txCenterY);
+                        ctx.moveTo(txBoxLeft - inWireLen, txCenterY);
                         ctx.lineTo(txBoxLeft, txCenterY);
                         ctx.stroke();
                         
@@ -777,11 +789,11 @@
                             ctx.stroke();
                         }
                         
-                        // Main output wire
+                        // Main output wire (clamped so it doesn't go off-canvas)
                         ctx.lineWidth = 3;
                         ctx.beginPath();
                         ctx.moveTo(rxBoxRight, rxCenterY);
-                        ctx.lineTo(rxBoxRight + 40, rxCenterY);
+                        ctx.lineTo(rxBoxRight + outWireLen, rxCenterY);
                         ctx.stroke();
 
                         // Draw symbol labels on wires
