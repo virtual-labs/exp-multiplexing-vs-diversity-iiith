@@ -1,0 +1,141 @@
+{
+  "version": 2.0,
+  "questions": [
+    {
+      "question": "Which of the following best describes the trade-off between diversity and spatial multiplexing in MIMO?",
+      "answers": {
+        "a": "Both increase simultaneously with more antennas",
+        "b": "Maximizing one usually reduces the other",
+        "c": "They are independent of each other",
+        "d": "Diversity is only used when multiplexing fails"
+      },
+      "explanations": {
+        "a": "Incorrect – adding antennas can increase both, but usually not to the maximum simultaneously.",
+        "b": "Correct – in practice, optimizing for one often reduces the other.",
+        "c": "Incorrect – they are closely linked through the diversity–multiplexing trade-off.",
+        "d": "Incorrect – diversity is a design choice, not a fallback."
+      },
+      "correctAnswer": "b",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "The Diversity-Multiplexing Tradeoff (DMT) illustrates the relationship between:",
+      "answers": {
+        "a": "Number of antennas and total power",
+        "b": "Error rate and delay",
+        "c": "Data rate and reliability",
+        "d": "Bandwidth and frequency"
+      },
+      "explanations": {
+        "a": "Incorrect – DMT is not about total power.",
+        "b": "Incorrect – error rate and delay are not the DMT axes.",
+        "c": "Correct – higher multiplexing gain boosts data rate but reduces reliability, and vice versa.",
+        "d": "Incorrect – bandwidth and frequency are unrelated to the DMT directly."
+      },
+      "correctAnswer": "c",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "Which of the following correctly explains the diversity-multiplexing tradeoff at high SNR?",
+      "answers": {
+        "a": "It disappears at high SNR",
+        "b": "Increasing diversity gain always increases multiplexing gain",
+        "c": "There exists a fundamental tradeoff between the two, even at high SNR",
+        "d": "Multiplexing gain is always better than diversity gain"
+      },
+      "explanations": {
+        "a": "Incorrect – the trade-off still exists at high SNR.",
+        "b": "Incorrect – improving one often comes at the expense of the other.",
+        "c": "Correct – the DMT remains valid regardless of SNR level.",
+        "d": "Incorrect – neither is inherently 'better', it depends on channel conditions."
+      },
+      "correctAnswer": "c",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "In practice, how is the trade-off between multiplexing and diversity typically handled?",
+      "answers": {
+        "a": "By using only diversity in all situations",
+        "b": "Fixed hardware design with no flexibility",
+        "c": "Adaptive MIMO modes based on channel conditions",
+        "d": "Ignoring the channel and using default MIMO setting"
+      },
+      "explanations": {
+        "a": "Incorrect – only using diversity wastes potential capacity.",
+        "b": "Incorrect – modern systems use flexible designs.",
+        "c": "Correct – systems adapt based on SNR, fading, and required QoS.",
+        "d": "Incorrect – ignoring the channel is inefficient."
+      },
+      "correctAnswer": "c",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "Which of the following MIMO techniques best exemplifies the multiplexing gain?",
+      "answers": {
+        "a": "Alamouti scheme",
+        "b": "STBC with orthogonal coding",
+        "c": "V-BLAST",
+        "d": "Maximal ratio combining"
+      },
+      "explanations": {
+        "a": "Incorrect – Alamouti is a diversity scheme.",
+        "b": "Incorrect – STBC focuses on diversity, not multiplexing.",
+        "c": "Correct – V-BLAST is designed for high multiplexing gain.",
+        "d": "Incorrect – MRC is purely a diversity technique."
+      },
+      "correctAnswer": "c",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "The maximum diversity gain in an N_t × N_r MIMO system is:",
+      "answers": {
+        "a": "N_t",
+        "b": "N_r",
+        "c": "min(N_t, N_r)",
+        "d": "N_t × N_r"
+      },
+      "explanations": {
+        "a": "Incorrect – this is only the number of transmit antennas.",
+        "b": "Incorrect – this is only the number of receive antennas.",
+        "c": "Incorrect – this is the maximum multiplexing gain, not diversity gain.",
+        "d": "Correct – diversity gain is the product of transmit and receive antennas."
+      },
+      "correctAnswer": "d",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "What happens to the number of SISO channels when antennas are grouped for diversity?",
+      "answers": {
+        "a": "It increases",
+        "b": "It remains the same",
+        "c": "It decreases",
+        "d": "It becomes zero"
+      },
+      "explanations": {
+        "a": "Incorrect – grouping for diversity reduces independent channels.",
+        "b": "Incorrect – grouping usually lowers the number of SISO channels.",
+        "c": "Correct – grouping antennas for diversity reduces the parallel streams.",
+        "d": "Incorrect – it doesn’t eliminate them entirely."
+      },
+      "correctAnswer": "c",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "If the maximum achievable diversity gain is 28, but the diversity gain achieved is 10 and the multiplexing gain is 2, find the number of transmit and receive antennas.",
+      "answers": {
+        "a": "7, 4",
+        "b": "6, 6",
+        "c": "14, 2",
+        "d": "8, 3"
+      },
+      "explanations": {
+        "a": "Incorrect – 7×4 = 28 max diversity, but achieved values do not match conditions.",
+        "b": "Incorrect – 6×6 = 36, not 28.",
+        "c": "Correct – 14×2 = 28 max diversity; with multiplexing gain 2, this fits the trade-off scenario.",
+        "d": "Incorrect – 8×3 = 24 max diversity."
+      },
+      "correctAnswer": "c",
+      "difficulty": "advanced"
+    }
+  ]
+}

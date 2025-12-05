@@ -1,0 +1,17 @@
+
+/home/runner/work/exp-multiplexing-vs-diversity-iiith/exp-multiplexing-vs-diversity-iiith/experiment/simulation/js/main.js
+     6:13  warning  'singularValues' is assigned a value but never used      no-unused-vars
+     7:13  warning  'beamformingVectors' is assigned a value but never used  no-unused-vars
+   309:18  warning  'handleMainAction' is defined but never used             no-unused-vars
+   320:18  warning  'partitionIndices' is defined but never used             no-unused-vars
+   335:19  warning  'txPower' is assigned a value but never used             no-unused-vars
+   550:23  warning  'boxInset' is assigned a value but never used            no-unused-vars
+   876:18  warning  'topIndicesByEnergy' is defined but never used           no-unused-vars
+  1112:18  warning  'resetExperiment' is defined but never used              no-unused-vars
+  1140:18  warning  'switchTab' is defined but never used                    no-unused-vars
+  1164:18  warning  'runAnalysis' is defined but never used                  no-unused-vars
+  1207:21  warning  Move function declaration to function body root          no-inner-declarations
+  1291:25  warning  Move function declaration to function body root          no-inner-declarations
+
+✖ 12 problems (0 errors, 12 warnings)
+

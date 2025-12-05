@@ -1,0 +1,142 @@
+{
+  "version": 2.0,
+  "questions": [
+    {
+      "question": "What is the primary goal of diversity in wireless communication systems?",
+      "answers": {
+        "a": "Increase the number of transmitted data streams",
+        "b": "Improve spectral efficiency",
+        "c": "Combat fading and improve reliability",
+        "d": "Reduce antenna spacing"
+      },
+      "explanations": {
+        "a": "Incorrect – that is the aim of multiplexing, not diversity.",
+        "b": "Incorrect – while diversity may indirectly improve efficiency, its main goal is reliability.",
+        "c": "Correct – diversity mitigates fading by combining multiple signal paths.",
+        "d": "Incorrect – antenna spacing may affect diversity, but it’s not the goal."
+      },
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "What is the main goal of spatial multiplexing in MIMO systems?",
+      "answers": {
+        "a": "Increase time diversity",
+        "b": "Reduce bit error rate",
+        "c": "Increase data rate by transmitting multiple streams",
+        "d": "Minimize transmit power"
+      },
+      "explanations": {
+        "a": "Incorrect – spatial multiplexing does not focus on time diversity.",
+        "b": "Incorrect – BER reduction is not the primary aim, though it can happen.",
+        "c": "Correct – spatial multiplexing boosts data rate by sending parallel streams.",
+        "d": "Incorrect – transmit power is not directly minimized by multiplexing."
+      },
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "Which of the following sentences correctly describes the difference between multiplexing and diversity?",
+      "answers": {
+        "a": "Diversity increases data rate by transmitting multiple data streams simultaneously.",
+        "b": "Multiplexing improves reliability by using multiple antennas to mitigate fading effects.",
+        "c": "Diversity enhances reliability through spatial, temporal, or frequency techniques.",
+        "d": "Multiplexing mitigates fading effects by utilizing independent fading paths between antennas."
+      },
+      "explanations": {
+        "a": "Incorrect – that’s multiplexing, not diversity.",
+        "b": "Incorrect – multiplexing primarily increases data rate, not reliability.",
+        "c": "Correct – diversity combats fading to improve link reliability.",
+        "d": "Incorrect – this describes diversity, not multiplexing."
+      },
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "In a MIMO system, if we prioritize diversity over multiplexing, what is the expected outcome?",
+      "answers": {
+        "a": "Higher data rate with higher probability of error",
+        "b": "Lower data rate with lower probability of error",
+        "c": "Higher data rate with lower probability of error",
+        "d": "Lower data rate with higher probability of error"
+      },
+      "explanations": {
+        "a": "Incorrect – prioritizing diversity reduces data rate but increases reliability.",
+        "b": "Correct – diversity sacrifices speed for improved reliability.",
+        "c": "Incorrect – that’s the ideal but unrealistic combination.",
+        "d": "Incorrect – diversity reduces error probability, not increases it."
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "In a 2×2 MIMO system, using all antennas for diversity instead of multiplexing will:",
+      "answers": {
+        "a": "Increase the number of independent data streams",
+        "b": "Reduce reliability",
+        "c": "Improve robustness to fading",
+        "d": "Increase interference"
+      },
+      "explanations": {
+        "a": "Incorrect – diversity doesn’t add more streams.",
+        "b": "Incorrect – diversity improves reliability.",
+        "c": "Correct – multiple copies of the signal strengthen fading resistance.",
+        "d": "Incorrect – interference levels are not inherently increased by diversity."
+      },
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "Which of the following techniques provides diversity gain but not multiplexing gain?",
+      "answers": {
+        "a": "V-BLAST",
+        "b": "Spatial multiplexing",
+        "c": "Space-Time Block Coding (STBC)",
+        "d": "OFDMA"
+      },
+      "explanations": {
+        "a": "Incorrect – V-BLAST is a multiplexing scheme.",
+        "b": "Incorrect – spatial multiplexing gives multiplexing gain, not diversity gain.",
+        "c": "Correct – STBC improves reliability without increasing the number of parallel streams.",
+        "d": "Incorrect – OFDMA is a multi-user access method, not a diversity scheme."
+      },
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "When channel conditions are poor (deep fading, low SNR), which is generally preferable?",
+      "answers": {
+        "a": "Spatial multiplexing",
+        "b": "Time multiplexing",
+        "c": "Diversity techniques",
+        "d": "Equal gain combining"
+      },
+      "explanations": {
+        "a": "Incorrect – spatial multiplexing struggles in low SNR.",
+        "b": "Incorrect – time multiplexing doesn’t inherently fix fading issues.",
+        "c": "Correct – diversity combats fading and increases link reliability.",
+        "d": "Incorrect – equal gain combining is a combining method, but diversity is the broader strategy."
+      },
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "In which of the following scenarios is spatial multiplexing most beneficial?",
+      "answers": {
+        "a": "Low SNR and slow fading",
+        "b": "High SNR and rich scattering",
+        "c": "Flat channels with high correlation",
+        "d": "Static channels with line-of-sight only"
+      },
+      "explanations": {
+        "a": "Incorrect – multiplexing needs high SNR to work well.",
+        "b": "Correct – rich scattering and high SNR allow more independent streams.",
+        "c": "Incorrect – high correlation reduces multiplexing gain.",
+        "d": "Incorrect – pure LOS limits the number of independent paths."
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    }
+  ]
+}
+
