@@ -14,6 +14,27 @@
         };
         let systemState = 'initial';
 
+        // ADDED: Helper function to highlight instructions
+        function highlightInstruction(stepId) {
+            // Remove active class from all steps
+            ['step-1', 'step-2', 'step-3', 'step-4', 'step-5', 'step-6'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.classList.remove('active-instruction');
+            });
+
+            // Add active class to target step
+            const target = document.getElementById(stepId);
+            if (target) {
+                target.classList.add('active-instruction');
+                
+                // Auto-scroll instructions into view if needed
+                const card = document.getElementById('instructionsCard');
+                if(card && card.open) {
+                    // Optional: simple logic to keep highlighted instruction visible
+                }
+            }
+        }
+
         function resizeCanvas() {
             const rect = canvas.getBoundingClientRect();
             canvas.width = rect.width;
@@ -501,6 +522,8 @@
             document.getElementById('stepIndicator').textContent = 'Step 3: Diversity antennas added to weakest streams first (round-robin)';
             document.getElementById('mainBtn').textContent = 'Optimized';
             document.getElementById('mainBtn').disabled = true;
+
+            highlightInstruction('step-5');
 
             systemState = 'optimized';
             drawAntennaSystem();
@@ -1110,6 +1133,8 @@
         }
 
         function resetExperiment() {
+            highlightInstruction('step-6');
+
             channelMatrix = [];
             singularValues = [];
             beamformingVectors = { v: [], u: [] };
@@ -1134,26 +1159,33 @@
             document.getElementById('tradeoffSection').style.display = 'none';
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            setTimeout(() => highlightInstruction('step-1'), 1500);
         }
         setTimeout(resizeCanvas, 100);
 
+        // MODIFIED: switchTab function
         function switchTab(tabName) {
-            // Update tab buttons
+            // ... existing tab switching logic ...
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
             event.target.classList.add('active');
             
-            // Update sections
             document.querySelectorAll('.page-section').forEach(section => {
                 section.classList.remove('active');
             });
             
             if (tabName === 'simulation') {
                 document.getElementById('simulationSection').classList.add('active');
+                // ADDED: Highlight Step 2 (Simulation Tab)
+                highlightInstruction('step-2');
             } else if (tabName === 'analysis') {
                 document.getElementById('analysisSection').classList.add('active');
-                // Check if system is ready for analysis
+                // ADDED: Highlight Step 4 (Analysis Tab)
+                highlightInstruction('step-4');
+                
+                // ... existing validation logic ...
                 if (!channelMatrix || channelMatrix.length === 0 || systemState !== 'optimized') {
                     alert('Please generate and optimize the system in the Simulation tab first!');
                     switchTab('simulation');
@@ -1347,6 +1379,8 @@
                 // Plot results
                 plotOutageProbability('outageCanvas', thresholdRange_dB, outageProb, userThresholds);
                 plotCapacity('capacityCanvas', snrRange_dB, avgCapacity);
+
+                highlightInstruction('step-5');
 
                 document.getElementById('runAnalysisBtn').textContent = 'Run Analysis';
                 document.getElementById('runAnalysisBtn').disabled = false;
@@ -1628,4 +1662,30 @@
                 if (details.open && window.innerWidth < 700) details.scrollIntoView({behavior:'smooth', block:'start'});
             });
         })();
+
+        // ADDED: Event Listeners at the end of the file
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initial Highlight
+            highlightInstruction('step-1');
+
+            // Simulation Parameters -> Step 3
+            const simInputs = ['txPower', 'numTx', 'numRx', 'numStreams', 'noiseVar', 'snrThreshold'];
+            simInputs.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) {
+                    el.addEventListener('input', () => highlightInstruction('step-3'));
+                    el.addEventListener('focus', () => highlightInstruction('step-3'));
+                }
+            });
+
+            // Analysis Parameters -> Step 4
+            const analysisInputs = ['numTrials', 'snrThresholds', 'minSNR', 'maxSNR', 'snrStep'];
+            analysisInputs.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) {
+                    el.addEventListener('input', () => highlightInstruction('step-4'));
+                    el.addEventListener('focus', () => highlightInstruction('step-4'));
+                }
+            });
+        });
     
