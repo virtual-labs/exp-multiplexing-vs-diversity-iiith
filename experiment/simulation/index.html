@@ -1,189 +1,192 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="css/main.css">
-	<title>Spatial Diversity Simulation</title>
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
-	  crossorigin="anonymous">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/virtual-labs/virtual-style@0.0.8-b/css/style.min.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diversity vs Multiplexing Wireless Experiment</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/virtual-labs/virtual-style@0.0.8-b/css/style.min.css">
+    <link rel="stylesheet" href="./css/main.css">
 </head>
-
 <body>
+    <div class="tab-container">
+        <button class="tab-btn active" onclick="switchTab('simulation')">Simulation</button>
+        <button class="tab-btn" onclick="switchTab('analysis')">Analysis</button>
+    </div>
 
-	<div class="columns is-centered">
-        <div class="column is-one-quarter v-instruction-title">
-            Tasks
+    <div id="simulationSection" class="page-section active">
+        <!-- ===== Instructions card (place inside #simulationSection BEFORE .container) ===== -->
+        <div class="instructions-card" role="region" aria-label="Instructions panel">
+        <details id="instructionsCard" open>
+            <summary aria-controls="instrBody" aria-expanded="true" tabindex="0">
+            <div style="display:flex; align-items:center; gap:12px; width:100%;">
+                <div style="flex:1; text-align:center;"><span class="title">Instructions</span></div>
+                <div class="chev-wrap" aria-hidden="true"><span class="chev"></span></div>
+            </div>
+            </summary>
+
+            <div id="instrBody" class="instructions-body" role="document">
+            <ol>
+				<li id="step-1"><strong>Overview:</strong> <span>This experiment has two tabs: <strong>Simulation</strong> (single system visualization) and <strong>Analysis</strong> (Monte Carlo performance analysis).</span></li>
+				<li id="step-2"><strong>Simulation Tab:</strong> <span>Configure a MIMO system with N<sub>t</sub> transmit antennas, N<sub>r</sub> receive antennas, and r spatial streams. Click "Generate System" to create a random Rayleigh channel, then "Optimize System" to allocate antennas using SVD-based multiplexing with diversity reinforcement. Weakest streams receive additional diversity antennas first.</span></li>
+				<li id="step-3"><strong>Parameter Guidelines:</strong> <span>Ensure r ≤ min(N<sub>t</sub>, N<sub>r</sub>). Set transmit power (P), noise variance (σ²), and SNR threshold for outage detection. The tradeoff curve shows multiplexing gain r vs diversity gain d(r) = (N<sub>t</sub> - r)(N<sub>r</sub> - r).</span></li>
+				<li id="step-4"><strong>Analysis Tab:</strong> <span>After optimizing the system in Simulation, switch to Analysis to run Monte Carlo trials. Specify multiple SNR thresholds (comma-separated) to compute outage probability curves. The analysis varies transmit power across SNR range to plot capacity vs SNR and outage probability vs threshold.</span></li>
+				<li id="step-5"><strong>Interpreting Results:</strong> <span>In Simulation, compare stream SNRs—outage streams are marked red. In Analysis, outage curves show P<sub>outage</sub> = Pr(min stream SNR < threshold). Each threshold marker appears in the legend below the plot with its outage probability. Capacity increases with SNR and multiplexing level r.</span></li>
+				<li id="step-6"><strong>Experimentation:</strong> <span>Try different (N<sub>t</sub>, N<sub>r</sub>, r) combinations to observe the diversity-multiplexing tradeoff. Low r (more diversity) reduces outage but limits throughput. High r (more multiplexing) increases capacity but raises outage risk at low SNR. Use "Reset" to start fresh.</span></li>
+			</ol>
         </div>
-        <div class="column">
-            <div class="tab">
-                <button class="tablinks" onclick="openPart(event, 'task1')", id="default">Fixed multiplexing</button>
-                <button class="tablinks" onclick="openPart(event, 'task2')">Fixed diversity</button>
+        </details>
+        </div>
+        <!-- ===== end instructions card ===== -->
+
+        <div class="container">
+            <!-- Left Panel: Inputs -->
+            <div class="panel">
+                <h2>Experiment Parameters</h2>
+                
+                <div class="input-group">
+                    <label for="txPower">Transmit Power (P)</label>
+                    <input type="number" id="txPower" value="10" step="0.1" min="0.1">
+                    <small>Power in Watts</small>
+                </div>
+
+                <div class="input-group">
+                    <label for="numTx">Transmit Antennas (N<sub>t</sub>)</label>
+                    <input type="number" id="numTx" value="4" step="1" min="1" max="8">
+                    <small>Number of TX antennas</small>
+                </div>
+
+                <div class="input-group">
+                    <label for="numRx">Receive Antennas (N<sub>r</sub>)</label>
+                    <input type="number" id="numRx" value="4" step="1" min="1" max="8">
+                </div>
+
+                <div class="input-group">
+                    <label for="numStreams">Multiplexing Streams (r)</label>
+                    <input type="number" id="numStreams" value="2" step="1" min="1" max="4">
+                    <small>Must be ≤ min(Nt, Nr)</small>
+                </div>
+
+                <div class="input-group">
+                    <label for="noiseVar">Noise Variance (σ²)</label>
+                    <input type="number" id="noiseVar" value="0.1" step="0.01" min="0.01">
+                    <small>Noise power</small>
+                </div>
+
+                <div class="input-group">
+                    <label for="snrThreshold">SNR Threshold (dB)</label>
+                    <input type="number" id="snrThreshold" value="15" step="0.5" min="0">
+                    <small>Target SNR for diversity</small>
+                </div>
+
+                <button class="btn" id="mainBtn" onclick="handleMainAction()">Generate System</button>
+                <button class="btn secondary" onclick="resetExperiment()">Reset</button>
+            </div>
+
+            <!-- Middle Panel: Simulation -->
+            <div class="panel">
+                <h2>Antenna System Visualization</h2>
+                <div class="step-indicator" id="stepIndicator">Step 1: Enter parameters and generate system</div>
+                <canvas id="simulationCanvas"></canvas>
+            </div>
+
+            <!-- Right Panel: Outputs -->
+            <div class="panel">
+                <h2>Results</h2>
+                
+                <div class="output-item">
+                    <h3>Channel Matrix H</h3>
+                    <p id="channelDim">-</p>
+                    <small>Rayleigh fading channel</small>
+                </div>
+
+                <div class="output-item" id="matrixSection" style="display: none;">
+                    <div class="matrix-display" id="matrixDisplay"></div>
+                </div>
+
+                <div class="output-item" id="tradeoffSection" style="display: none;">
+                    <h3>Tradeoff Plot</h3>
+                    <canvas id="tradeoffCanvas" style="width: 100%; height: 300px;"></canvas>
+                    <small>d<sub>opt</sub>(r) = (N<sub>t</sub> - r)(N<sub>r</sub> - r)</small>
+                </div>
+
+                <div class="output-item" id="snrSection" style="display: none;">
+                    <h3>SNR Values (dB)</h3>
+                    <div class="snr-list" id="snrList"></div>
+                </div>
             </div>
         </div>
     </div>
 
-	<div id="task1" class="tabcontent">
-		<section class="fre" id="TASK1">
-			<div class="max-width">
-				<h2 class="title">Diversity vs Multiplexing</h2>
-				<div class="columns is-centered">
-					<div class="v-collapsible-instruction-container v-instruction-container" style="margin-top: 2%;">
-						<div class="v-collapsible is-size-5">Instructions</div>
-						<div class="v-content" style="text-align: left; padding-left: 10%; padding-right: 10%;">
-							<h3> <b> To understand the tradeoff between multiplexing and diversity, follow these steps: </b> </h3>
-							<br>
-							<h3>
-								<ol> 
-									<li> Enter the input values. Note that entering R implies fixed value for muliplexing. </li>
-									<li> Observe that the rate is in coherence with the input and the remaining antennas are used for diversity.</li>
-									
-								</ol>
-							</h3>
-							<br>
-						</div>
-					</div>
-				</div>
+    <!-- Add new Analysis section -->
+    <div id="analysisSection" class="page-section">
+        <div class="analysis-container">
+            <!-- Left Panel: Analysis Controls -->
+            <div class="analysis-controls">
+                <h2>Analysis Parameters</h2>
+                
+                <div class="control-group">
+                    <label>Number of Trials</label>
+                    <input type="number" id="numTrials" value="500" min="100" step="100">
+                    <small>Monte Carlo iterations</small>
+                </div>
 
+                <div class="control-group">
+                    <label>SNR Thresholds (dB)</label>
+                    <input type="text" id="snrThresholds" value="10, 15, 20, 25" placeholder="e.g., 10, 15, 20, 25">
+                    <small>Comma-separated SNR threshold values</small>
+                </div>
+                
+                <div class="control-group">
+                    <label>Min SNR (dB)</label>
+                    <input type="number" id="minSNR" value="0" step="1">
+                    <small>Starting SNR value</small>
+                </div>
+                
+                <div class="control-group">
+                    <label>Max SNR (dB)</label>
+                    <input type="number" id="maxSNR" value="40" step="1">
+                    <small>Ending SNR value</small>
+                </div>
+                
+                <div class="control-group">
+                    <label>SNR Step (dB)</label>
+                    <input type="number" id="snrStep" value="2" min="0.5" step="0.5">
+                    <small>SNR increment</small>
+                </div>
+                
+                <button class="btn" id="runAnalysisBtn" onclick="runAnalysis()">Run Analysis</button>
+            </div>
 
-				<div class="columns-container">
-					<div class="left-column box">
-						<div class="columns is-centered is-flex-direction-row is-flex-wrap-wrap is-align-content-start" style="margin-top:-1.5%">
-							<div class="column is-2-desktop is-4-tablet is-10-mobile">
-								<div class="box-question">
-									<div class="fill1">
-										Nt <input type="number" id="Nt">
-									</div>
-									<div class="fill1">
-										Nr <input type="number" id="Nr" step="0.1">
-									</div>
-									<div class="fill1">
-										SNR <input type="number" id="SNR" step="0.1">
-									</div>
-									<div class="fill1">
-										R <input type="number" id="R" step="0.1">
-									</div>
-									<button class="buttonTotal" id="calculateButton" role="button" onClick="getOutput()">Calculate</button>
-									
-								</div>
-							</div>
-						</div>
-					</div>
-						<div class="center-column box">
-						<div class="column is-7-desktop is-10-tablet is-10-mobile" >
-							<img id="imageDisplay" src="./images/DivVsMux.png" alt="Image">
-						</div>
-					</div>
-						<div class="right-column box">
-						<div class="column is-3-desktop is-10-tablet is-5-mobile">
-							<div class="box-question">
-								<div class="v-datalist-title">Observations</div>
-								<div id="observations">
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
+            <!-- Right Panel: Results -->
+            <div class="analysis-results">
+                <h2>Analysis Results</h2>
+                
+                <div class="charts-container">
+                    <div class="analysis-chart">
+                        <h3>Outage Probability vs SNR</h3><br>
+                        <div style="text-align: center;">
+                            <p class="chart-description">
+                                P<sub>out</sub> = Pr{γ<sub>min</sub> < γ<sub>th</sub>}
+                            </p>
+                        </div><br>
+                        <canvas id="outageCanvas"></canvas>
+                        <div id="outageLegend" class="outage-legend"></div>
+                    </div>
 
-
-			</div>
-
-		</section>
-	</div>
-
-
-
-
-	<div id="task2" class="tabcontent">
-		<section class="fre" id="TASK2">
-			<div class="max-width">
-				<h2 class="title">Diversity vs Multiplexing</h2>
-				<div class="columns is-centered">
-					<div class="v-collapsible-instruction-container v-instruction-container" style="margin-top: 2%;">
-						<div class="v-collapsible is-size-5">Instructions</div>
-						<div class="v-content" style="text-align: left; padding-left: 10%; padding-right: 10%;">
-							<h3> <b> To understand the tradeoff between multiplexing and diversity, follow these steps: </b> </h3>
-							<br>
-							<h3>
-								<ol> 
-									<li> Enter the input values. Note that entering Pe implies fixed value for diversity. </li>
-									<li> Observe that the probability of error is in coherence with the input and the remaining antennas are used for multiplexing.</li>
-								</ol>
-							</h3>
-							<br>
-						</div>
-					</div>
-				</div>
-			
-					<div class="columns-container">
-						<div class="left-column box">
-							<div class="columns is-centered is-flex-direction-row is-flex-wrap-wrap is-align-content-start"
-							style="margin-top:-1.5%">
-								<div class="column is-2-desktop is-4-tablet is-10-mobile">
-									<div class="box-question">
-										<div class="fill1">
-											Nt <input type="number" id="Nt2">
-										</div>
-										<div class="fill1">
-											Nr <input type="number" id="Nr2" step="0.1">
-										</div>
-										<div class="fill1">
-											SNR <input type="number" id="SNR2" step="0.1">
-										</div>
-										<div class="fill1">
-											Pe <input type="number" id="Pe" step="0.1">
-										</div>
-										<button class="buttonTotal" id="calculateButton2" role="button" onClick="getOutput2()">Calculate</button>
-										
-										
-									</div>
-								</div>
-							</div>	
-						</div>
-
-						<div class="center-column box">
-							<div class="column is-7-desktop is-10-tablet is-10-mobile" >
-								<img id="imageDisplay2" src="./images/DivVsMux.png" alt="Image">
-							</div>
-						</div>
-
-						<div class="right-column box">
-							<div class="column is-3-desktop is-10-tablet is-5-mobile">
-								<div class="box-question">
-									<div class="v-datalist-title">Observations</div>
-									<div id="observations2">
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-
-
-
-
-
-
-		
-					<script src="js/jsplumb.bundle.js"></script>
-					<script src="https://cdn.jsdelivr.net/gh/virtual-labs/virtual-style@0.0.8-b/js/script.js"></script>
-					<script type="module" src="js/main.js"></script>
-
-				</div>
-			</div>
-
-		</section>
-	</div>
-
-
-
-
-
+                    <div class="analysis-chart">
+                        <h3>Total Capacity vs SNR</h3><br>
+                        <div style="text-align: center;">
+                            <p class="chart-description">
+                                C = Σ<sub>i=1</sub><sup>r</sup> log₂(1 + γ<sub>i</sub>) bits/s/Hz
+                            </p>
+                        </div><br>
+                        <canvas id="capacityCanvas"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 	<script src="./js/main.js"></script>
 	<script src="https://cdn.jsdelivr.net/gh/virtual-labs/virtual-style@0.0.8-b/js/script.js"></script>
-
 </body>
-
 </html>
